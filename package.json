@@ -4,9 +4,42 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=10.5.0",
+    "yarn": ">=1.16.0"
+  },
+  "alias": {
+    "src": "./src"
+  },
   "scripts": {
-    "build": "./node_modules/grunt-cli/bin/grunt",
-    "test": "./node_modules/grunt-cli/bin/grunt mochaTest"
+    "start": "yarn install && yarn generate && cross-env TS_NODE_PROJECT=\"webpack.tsconfig.json\" && yarn run build:vendor && yarn run start:dev",
+    "start:cloud": "yarn install && yarn generate && cross-env TS_NODE_PROJECT=\"webpack.tsconfig.json\" && yarn run build:vendor && yarn run start:dev-cloud",
+    "start:dev": "webpack-dev-server --config ./webpack.dev.ts",
+    "start:dev-cloud": "cross-env CLOUD_LOGOUT_URL=http://localhost:8080/api/v2/signout CLOUD_URL=http://localhost:9999 webpack-dev-server --config ./webpack.dev.ts",
+    "start:docker": "yarn generate && yarn build:vendor && yarn run start:dev",
+    "build": "yarn install --silent",
+    "clean": "rm -rf ./build && rm -rf ./.cache && rm -rf node_modules && rm -rf cypress/screenshots && rm -rf cypress/videos && rm -f junit-results/* ",
+    "test": "jest --maxWorkers=2",
+    "test:watch": "jest --watch --verbose false",
+    "test:update": "jest --updateSnapshot",
+    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand --watch --verbose false",
+    "test:e2e": "CYPRESS_baseUrl=http://localhost:9999 cypress run --browser chrome --reporter junit --reporter-options 'mochaFile=junit-results/test-output-[hash].xml'",
+    "test:e2e:report": "junit-viewer --results=junit-results --save-file=cypress/site/junit-report.html",
+    "test:e2e:clean": "rm junit-results/*.xml",
+    "test:e2e:all": "yarn test:e2e:clean && yarn test:e2e; yarn test:e2e:report;",
+    "test:circleci": "yarn run test:ci --maxWorkers=2",
+    "test:ci": "JEST_JUNIT_OUTPUT_DIR=\"./coverage\" jest --ci --coverage",
+    "lint": "yarn tsc && yarn prettier && yarn eslint",
+    "eslint": "eslint '{src,cypress}/**/*.{ts,tsx}'",
+    "eslint:circleci": "eslint",
+    "eslint:fix": "eslint --fix '{src,cypress}/**/*.{ts,tsx}'",
+    "prettier": "prettier --config .prettierrc.json --check '{src,cypress}/**/*.{ts,tsx}'",
+    "prettier:fix": "prettier --config .prettierrc.json --write '{src,cypress}/**/*.{ts,tsx}'",
+    "tsc": "tsc -p ./tsconfig.json --noEmit --pretty --skipLibCheck",
+    "tsc:cypress": "tsc -p ./cypress/tsconfig.json --noEmit --pretty --skipLibCheck",
+    "cy": "CYPRESS_baseUrl=http://localhost:9999 cypress open",
+    "cy:dev": "CYPRESS_baseUrl=http://localhost:8080 cypress open",
+    "generate": "oats ../http/swagger.yml > ./src/client/generatedRoutes.ts"
   },
   "repository": {
     "type": "git",
@@ -19,25 +52,18 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "babel": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "chai": "~3.5.0",
-    "grunt": "^1.0.1",
-    "grunt-babel": "~6.0.0",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^2.3.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-execute": "~0.2.2",
-    "grunt-mocha-test": "^0.13.2",
-    "grunt-systemjs-builder": "^1.0.0",
+    "eslint-plugin-jest": "^23.0.2",
+    "jest": "^24.8.0",
+    "jest-junit": "^10.0.0",
     "jsdom": "~9.12.0",
-    "load-grunt-tasks": "^3.5.2",
     "mocha": "^3.2.0",
     "prunk": "^1.3.0",
-    "q": "^1.5.0"
+    "q": "^1.5.0",
+    "ts-jest": "^24.0.0",
+    "typescript": "3.6.4"
   },
   "dependencies": {
     "lodash": "^4.17.13"
