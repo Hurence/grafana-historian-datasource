@@ -1,80 +1,49 @@
 {
-  "author": "Grafana Labs",
+  "author": "Hurence",
   "license": "Apache-2.0",
   "private": true,
   "name": "hurence-historian-grafana-datasource",
   "version": "1.0.0-pre",
-  "devDependencies": {
-    "@babel/core": "7.8.3",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "7.8.3",
-    "@babel/plugin-syntax-dynamic-import": "7.8.3",
-    "@babel/preset-env": "7.8.3",
-    "@babel/preset-react": "7.8.3",
-    "@babel/preset-typescript": "7.8.3",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "24.8.0",
-    "babel-loader": "8.0.5",
-    "babel-plugin-angularjs-annotate": "0.10.0",
-    "grunt": "1.0.1",
-    "grunt-angular-templates": "1.1.0",
-    "grunt-cli": "1.2.0",
-    "grunt-contrib-clean": "1.0.0",
-    "grunt-contrib-compress": "1.6.0",
-    "grunt-contrib-copy": "1.0.0",
-    "grunt-exec": "1.0.1",
-    "grunt-newer": "1.3.0",
-    "grunt-notify": "0.4.5",
-    "grunt-postcss": "0.8.0",
-    "grunt-sass-lint": "0.2.4",
-    "grunt-usemin": "3.1.1",
-    "grunt-webpack": "3.1.3",
-    "jest": "24.8.0",
-    "jest-canvas-mock": "2.1.2",
-    "jest-date-mock": "1.0.7",  
-    "load-grunt-tasks": "3.5.2",
-    "mini-css-extract-plugin": "0.5.0",
-    "mocha": "4.1.0",
-    "typescript": "3.7.2"
-  },
-  "scripts": {
-    "dev": "webpack --progress --colors --config scripts/webpack/webpack.dev.js",
-    "start": "grafana-toolkit core:start --watchTheme",
-    "start:hot": "grafana-toolkit core:start --hot --watchTheme",
-    "start:ignoreTheme": "grafana-toolkit core:start --hot",
-    "start:noTsCheck": "grafana-toolkit core:start --noTsCheck",
-    "stats": "webpack --mode production --config scripts/webpack/webpack.prod.js --profile --json > compilation-stats.json",
-    "watch": "yarn start -d watch,start core:start --watchTheme ",
-    "build": "grunt build",
-    "test": "grunt test",
-    "tslint": "tslint -c tslint.json --project tsconfig.json",
-    "typecheck": "tsc --noEmit",
-    "typecheckPackages": "yarn workspaces run typecheck",
-    "jest": "jest --notify --watch",
-    "jest-ci": "mkdir -p reports/junit && export JEST_JUNIT_OUTPUT_DIR=reports/junit && jest --ci --reporters=default --reporters=jest-junit --maxWorkers 2",
-    "e2e": "cd packages/grafana-e2e && yarn start --env BASE_URL=$BASE_URL,CIRCLE_SHA1=$CIRCLE_SHA1,SLOWMO=$SLOWMO --config integrationFolder=../../public/e2e-tests/integration,screenshotsFolder=../../public/e2e-tests/screenShots,videosFolder=../../public/e2e-tests/videos,fileServerFolder=./cypress,viewportWidth=1920,viewportHeight=1080,trashAssetsBeforeRuns=false",
-    "e2e-tests": "yarn e2e",
-    "e2e-tests:debug": "SLOWMO=1 yarn e2e --headed --no-exit",
-    "api-tests": "jest --notify --watch --config=devenv/e2e-api-tests/jest.js",
-    "storybook": "cd packages/grafana-ui && yarn storybook --ci",
-    "storybook:build": "cd packages/grafana-ui && yarn storybook:build",
-    "prettier:check": "prettier --list-different \"**/*.{ts,tsx,scss}\"",
-    "prettier:write": "prettier --list-different \"**/*.{ts,tsx,scss}\" --write",
-    "precommit": "grafana-toolkit precommit",
-    "themes:generate": "ts-node --project ./scripts/cli/tsconfig.json ./scripts/cli/generateSassVariableFiles.ts",
-    "packages:prepare": "lerna version --no-push --no-git-tag-version --force-publish --exact",
-    "packages:build": "lerna run clean && lerna run build",
-    "packages:publish": "lerna publish from-package --contents dist",
-    "packages:publishLatest": "lerna publish from-package --contents dist --yes",
-    "packages:publishNext": "lerna publish from-package --contents dist --dist-tag next --yes",
-    "packages:publishCanary": "lerna publish from-package --contents dist --dist-tag canary --yes"
-  },
-  "dependencies": {
-    "lodash": "^4.17.13"
-  },
-
   "engines": {
     "node": ">=12 <13",
-    "yarn": ">=1.16.0"
-  }
+    "yarn": ">=1.22.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/grunt-cli/bin/grunt",
+    "test": "./node_modules/grunt-cli/bin/grunt mochaTest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grafana/simple-json-datasource.git"
+  },
+  "bugs": {
+    "url": "https://github.com/grafana/simple-json-datasource/issues"
+  },
+  "engineStrict": true,
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "chai": "~3.5.0",
+    "grunt": "^1.0.1",
+    "grunt-babel": "~6.0.0",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^2.3.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-execute": "~0.2.2",
+    "grunt-mocha-test": "^0.13.2",
+    "grunt-systemjs-builder": "^1.0.0",
+    "jsdom": "~9.12.0",
+    "load-grunt-tasks": "^3.5.2",
+    "mocha": "^3.2.0",
+    "prunk": "^1.3.0",
+    "q": "^1.5.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "homepage": "https://github.com/grafana/simple-json-datasource#readme"
 }
