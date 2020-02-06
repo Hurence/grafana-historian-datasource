@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grafana/simple-json-datasource.git"
+    "url": "git+https://github.com/Hurence/grafana-historian-datasource.git"
   },
   "bugs": {
-    "url": "https://github.com/grafana/simple-json-datasource/issues"
+    "url": "https://github.com/Hurence/grafana-historian-datasource/issues"
   },
   "engineStrict": true,
   "devDependencies": {
@@ -45,5 +45,5 @@
   "dependencies": {
     "lodash": "^4.17.4"
   },
-  "homepage": "https://github.com/grafana/simple-json-datasource#readme"
+  "homepage": "https://github.com/Hurence/grafana-historian-datasource#readme"
 }
