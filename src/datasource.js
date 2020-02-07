@@ -47,19 +47,26 @@ export class GenericDatasource {
       }
     });
   }
-
+  /**
+   * Can be optionally implemented to allow datasource to be a source of annotations for dashboard. To be visible
+   * in the annotation editor `annotations` capability also needs to be enabled in plugin.json.
+   */
+  // annotationQuery?(options: AnnotationQueryRequest<TQuery>): Promise<AnnotationEvent[]>;
   annotationQuery(options) {
-    var query = this.templateSrv.replace(options.annotation.query, {}, 'glob');
-    var annotationQuery = {
+    if (options.annotation.type === 'tags') {
+      // require at least one tag
+      if (!_.isArray(options.annotation.tags) || options.annotation.tags.length === 0) {
+        return Promise.resolve([]);
+      }
+    }
+
+    const annotationQuery = {
       range: options.range,
-      annotation: {
-        name: options.annotation.name,
-        datasource: options.annotation.datasource,
-        enable: options.annotation.enable,
-        iconColor: options.annotation.iconColor,
-        query: query
-      },
-      rangeRaw: options.rangeRaw
+      rangeRaw: options.rangeRaw,
+      limit: options.annotation.limit,
+      tags: options.annotation.tags,    
+      matchAny: options.annotation.matchAny,
+      type: options.annotation.type,
     };
 
     return this.doRequest({

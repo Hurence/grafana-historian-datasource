@@ -9,6 +9,8 @@ var _datasource = require('./datasource');
 
 var _query_ctrl = require('./query_ctrl');
 
+var _annotations_query_ctrl = require('./annotations_query_ctrl');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GenericConfigCtrl = function GenericConfigCtrl() {
@@ -23,15 +25,9 @@ var GenericQueryOptionsCtrl = function GenericQueryOptionsCtrl() {
 
 GenericQueryOptionsCtrl.templateUrl = 'partials/query.options.html';
 
-var GenericAnnotationsQueryCtrl = function GenericAnnotationsQueryCtrl() {
-  _classCallCheck(this, GenericAnnotationsQueryCtrl);
-};
-
-GenericAnnotationsQueryCtrl.templateUrl = 'partials/annotations.editor.html';
-
 exports.Datasource = _datasource.GenericDatasource;
 exports.QueryCtrl = _query_ctrl.GenericDatasourceQueryCtrl;
 exports.ConfigCtrl = GenericConfigCtrl;
 exports.QueryOptionsCtrl = GenericQueryOptionsCtrl;
-exports.AnnotationsQueryCtrl = GenericAnnotationsQueryCtrl;
+exports.AnnotationsQueryCtrl = _annotations_query_ctrl.HistorianAnnotationsQueryCtrl;
 //# sourceMappingURL=module.js.map
