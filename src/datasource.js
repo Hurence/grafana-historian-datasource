@@ -53,20 +53,13 @@ export class GenericDatasource {
    */
   // annotationQuery?(options: AnnotationQueryRequest<TQuery>): Promise<AnnotationEvent[]>;
   annotationQuery(options) {
-    if (options.annotation.type === 'tags') {
-      // require at least one tag
-      if (!_.isArray(options.annotation.tags) || options.annotation.tags.length === 0) {
-        return Promise.resolve([]);
-      }
-    }
-
     const annotationQuery = {
       range: options.range,
       rangeRaw: options.rangeRaw,
-      limit: options.annotation.limit,
-      tags: options.annotation.tags,    
-      matchAny: options.annotation.matchAny,
-      type: options.annotation.type,
+      limit: options.limit,
+      tags: options.tags,
+      matchAny: options.matchAny,
+      type: options.type,
     };
 
     return this.doRequest({

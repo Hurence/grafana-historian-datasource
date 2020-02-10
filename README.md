@@ -1,8 +1,6 @@
-## Simple JSON Datasource - a generic backend datasource
+## Hurence JSON Datasource - a generic backend datasource
 
 More documentation about datasource plugins can be found in the [Docs](https://github.com/grafana/grafana/blob/master/docs/sources/plugins/developing/datasources.md).
-
-This also serves as a living example implementation of a datasource.
 
 Your backend needs to implement 4 urls:
 
@@ -18,24 +16,18 @@ Those two urls are optional:
 
 ## Installation
 
-To install this plugin using the `grafana-cli` tool:
-```
-sudo grafana-cli plugins install grafana-simple-json-datasource
-sudo service grafana-server restart
-```
-See [here](https://grafana.com/plugins/grafana-simple-json-datasource/installation) for more
-information.
+To install this plugin, build it and then copy past the dist folder into the plugin folder of your grafana instance server.
 
-### Example backend implementations
-- https://github.com/bergquist/fake-simple-json-datasource
-- https://github.com/smcquay/jsonds
-- https://github.com/ContextLogic/eventmaster
-- https://gist.github.com/linar-jether/95ff412f9d19fdf5e51293eb0c09b850 (Python/pandas backend)
+```
+yarn build
+```
+
+You'll need to restart your grafana server.
 
 ### Query API
 
 Example `timeserie` request
-``` javascript
+``` json
 {
   "panelId": 1,
   "range": {
@@ -67,7 +59,7 @@ Example `timeserie` request
 ```
 
 Example `timeserie` response
-``` javascript
+``` json
 [
   {
     "target":"upper_75", // The field being queried for
@@ -109,7 +101,7 @@ If the metric selected is `"type": "table"`, an example `table` response:
 
 The annotation request from the Simple JSON Datasource is a POST request to
 the `/annotations` endpoint in your datasource. The JSON request body looks like this:
-``` javascript
+``` json
 {
   "range": {
     "from": "2016-04-15T13:44:39.070Z",
@@ -119,27 +111,25 @@ the `/annotations` endpoint in your datasource. The JSON request body looks like
     "from": "now-1h",
     "to": "now"
   },
-  "annotation": {
-    "name": "deploy",
-    "datasource": "Simple JSON Datasource",
-    "iconColor": "rgba(255, 96, 96, 1)",
-    "enable": true,
-    "query": "#deploy"
-  }
+  "limit" : 100,
+  "tags": ["tag1", "tag2"],
+  "matchAny": true,
+  "type": "tags"
 }
 ```
 
 Grafana expects a response containing an array of annotation objects in the
 following format:
 
-``` javascript
+``` json
 [
   {
-    annotation: annotation, // The original annotation sent from Grafana.
-    time: time, // Time since UNIX Epoch in milliseconds. (required)
-    title: title, // The title for the annotation tooltip. (required)
-    tags: tags, // Tags for the annotation. (optional)
-    text: text // Text for the annotation. (optional)
+    "time": 1581075145188, //required
+    "timeEnd": 1581075145188,
+    "text": "bbbb", //required
+    "tags": [
+      "tag1"
+    ]
   }
 ]
 ```
@@ -157,31 +147,31 @@ Access-Control-Allow-Origin:*
 ### Search API
 
 Example request
-``` javascript
-{ target: 'upper_50' }
+``` json
+{ "target": "upper_50" }
 ```
 
 The search api can either return an array or map.
 
 Example array response
-``` javascript
+``` json
 ["upper_25","upper_50","upper_75","upper_90","upper_95"]
 ```
 
 Example map response
-``` javascript
+``` json
 [ { "text" :"upper_25", "value": 1}, { "text" :"upper_75", "value": 2} ]
 ```
 
 ### Tag Keys API
 
 Example request
-``` javascript
+``` json
 { }
 ```
 
 The tag keys api returns:
-```javascript
+```json
 [
     {"type":"string","text":"City"},
     {"type":"string","text":"Country"}
@@ -191,16 +181,16 @@ The tag keys api returns:
 ### Tag Values API
 
 Example request
-``` javascript
+``` json
 {"key": "City"}
 ```
 
 The tag values api returns:
-```javascript
+```json
 [
-    {'text': 'Eins!'},
-    {'text': 'Zwei'},
-    {'text': 'Drei!'}
+    {"text": "Eins!"},
+    {"text": "Zwei"},
+    {"text": "Drei!"}
 ]
 ```
 
@@ -216,32 +206,8 @@ npm run build
 
 ### Changelog
 
-1.4.0
-
-- Support for adhoc filters:
-  - added tag-keys + tag-values api
-  - added adHocFilters parameter to query body
-
-1.3.5
-- Fix for dropdowns in query editor to allow writing template variables (broke due to change in Grafana).
-
-1.3.4
-- Adds support for With Credentials (sends grafana cookies with request) when using Direct mode
-- Fix for the typeahead component for metrics dropdown (`/search` endpoint).
-
-1.3.3
- - Adds support for basic authentication
-
-1.2.4
- - Add support returning sets in the search endpoint
-
-1.2.3
- - Allow nested templates in find metric query. #23
-
-1.2.2
- - Dont execute hidden queries
- - Template support for metrics queries
- - Template support for annotation queries
+1.0.0
+ - Modified annotations handling
 
 ### If using Grafana 2.6
 NOTE!

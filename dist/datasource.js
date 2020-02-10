@@ -77,20 +77,13 @@ var GenericDatasource = exports.GenericDatasource = function () {
   }, {
     key: 'annotationQuery',
     value: function annotationQuery(options) {
-      if (options.annotation.type === 'tags') {
-        // require at least one tag
-        if (!_lodash2.default.isArray(options.annotation.tags) || options.annotation.tags.length === 0) {
-          return Promise.resolve([]);
-        }
-      }
-
       var annotationQuery = {
         range: options.range,
         rangeRaw: options.rangeRaw,
-        limit: options.annotation.limit,
-        tags: options.annotation.tags,
-        matchAny: options.annotation.matchAny,
-        type: options.annotation.type
+        limit: options.limit,
+        tags: options.tags,
+        matchAny: options.matchAny,
+        type: options.type
       };
 
       return this.doRequest({
