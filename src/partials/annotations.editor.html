@@ -24,7 +24,7 @@
 		</div>
 	</div>
 	<div class="gf-form-inline">
-		<div class="gf-form">
+		<div class="gf-form" ng-if="ctrl.annotation.type === 'tags'">
 			<gf-form-switch
 				class="gf-form"
 				label="Match any"
@@ -33,7 +33,7 @@
 				on-change="ctrl.refresh()"
 				tooltip="By default Historian only shows annotations that match all tags in the query. Enabling this returns annotations that match any of the tags in the query."></gf-form-switch>
 		</div>
-		<div class="gf-form">
+		<div class="gf-form" ng-if="ctrl.annotation.type === 'tags'">
 			<span class="gf-form-label">
 				Tags
 				<info-popover mode="right-normal">
