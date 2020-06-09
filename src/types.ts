@@ -1,18 +1,5 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
-// "from": "2016-10-31T06:33:44.866Z",
-// "to": "2020-10-31T12:33:44.866Z",
-// "names": ["metric_1"],
-// "format": "json",
-// "max_data_points": 8,
-// "tags": {
-//     "sensor" : "sensor_1"
-// },
-// "sampling":{
-//     "algorithm": "MIN",
-//     "bucket_size" : 100
-// }
-
 export interface HistorianQueryRequest {
   from: string;
   to: string;
@@ -28,7 +15,7 @@ export interface HistorianQueryRequest {
 
 export interface TimeSerieHistorian {
   name: string;
-  datapoints: [[number, number]];
+  datapoints: [number, number][];
   aggregations?: {
     min?: number;
     max?: number;

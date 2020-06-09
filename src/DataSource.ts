@@ -73,11 +73,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     historianQueryRsp: TimeSerieHistorian[]
   ): DataQueryResponseData[] {
     const namesToRefId = new Map<string, string>(options.targets.map(x => [x.name, x.refId] as [string, string]));
-    console.error('historianQueryRsp is', historianQueryRsp);
-
     const dataframes = historianQueryRsp.map(timeserie => {
       const frame = new MutableDataFrame({
-        refId: namesToRefId.get(timeserie.name),
+        refId: namesToRefId.get(timeserie.name),    
         fields: [
           { name: 'time', type: FieldType.time },
           { name: timeserie.name, type: FieldType.number },
@@ -96,7 +94,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     return dataframes;
   }
 
-  buildHistorianQueryRequest(options: DataQueryRequest<MyQuery>): HistorianQueryRequest {
+  private buildHistorianQueryRequest(options: DataQueryRequest<MyQuery>): HistorianQueryRequest {
     const { range } = options;
     const from: string = range!.from.toISOString();
     const to: string = range!.to.toISOString();
@@ -116,7 +114,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     };
   }
 
-  testDatasource() {
+  async testDatasource() {
     return this.backendSrv.datasourceRequest(this.buildHttpRequest(this.url + '/', 'GET')).then(response => {
       if (response.status === 200) {
         return { status: 'success', message: 'Success' };
