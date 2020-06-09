@@ -10,13 +10,10 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
-  onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
-    const jsonData = {
-      ...options.jsonData,
-      path: event.target.value,
-    };
-    onOptionsChange({ ...options, jsonData });
+    const url = event.target.value;
+    onOptionsChange({ ...options, url });
   };
 
   // Secure field (only sent to the backend)
@@ -63,20 +60,24 @@ export class ConfigEditor extends PureComponent<Props, State> {
       <div className="gf-form-group">
         <div className="gf-form">
           <FormField
-            label="Path"
+            label="URL"
             labelWidth={6}
             inputWidth={20}
-            onChange={this.onPathChange}
-            value={jsonData.path || ''}
-            placeholder="json field returned to frontend"
+            onChange={this.onUrlChange}
+            value={options.url || ''}
+            placeholder="http://historienserver:port/api/grafana/v0"
+            tooltip="The url to the historian grafana api. Usually just replace historienserver:port."
           />
         </div>
         <div className="gf-form">
           <FormField
-            label="Max number of metric to return when searching"
+            label="Max search metric"
+            labelWidth={10}
+            inputWidth={20}
             onChange={this.onMaxNumberOfMetricTiReturnChange}
             value={jsonData.max_number_of_metric_to_return || ''}
             placeholder="Enter a number"
+            tooltip="The mximum number of metric name to return when filling metric name in query editors"
           />
         </div>
 

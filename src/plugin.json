@@ -36,5 +36,12 @@
   "dependencies": {
     "grafanaVersion": "6.5.x",
     "plugins": []
-  }
+  },
+  "routes": [
+    {
+        "path": "historian/api/v0/*",
+        "method": "POST",
+        "url": "{{.JsonData.dynamicUrl}}"
+    }
+  ]  
 }

@@ -12,10 +12,13 @@ import { DataQuery, DataSourceJsonData } from '@grafana/data';
 //     "algorithm": "MIN",
 //     "bucket_size" : 100
 // }
-export interface MyQuery extends DataQuery {
-  queryText?: string;
-  constant?: number;
-  frequency?: number;
+
+export interface HistorianQueryRequest {
+  from: string;
+  to: string;
+  names: string[];
+  format?: string;
+  max_data_points?: number;
   tags?: { [key: string]: string };
   sampling?: {
     algorithm?: string;
@@ -23,11 +26,28 @@ export interface MyQuery extends DataQuery {
   };
 }
 
-export const defaultQuery: Partial<MyQuery> = {
-  queryText: '',
-  constant: 6.5,
-  frequency: 1.0,
-};
+export interface TimeSerieHistorian {
+  name: string;
+  datapoints: [[number, number]];
+  aggregations?: {
+    min?: number;
+    max?: number;
+    count?: number;
+    avg?: number;
+    sum?: number;
+  };
+}
+
+export interface MyQuery extends DataQuery {
+  name: string;
+  tags?: { [key: string]: string };
+  sampling?: {
+    algorithm?: string;
+    bucket_size?: string;
+  };
+}
+
+export const defaultQuery: Partial<MyQuery> = {};
 
 /**
  * These are options configured for each DataSource instance
@@ -35,6 +55,7 @@ export const defaultQuery: Partial<MyQuery> = {
 export interface MyDataSourceOptions extends DataSourceJsonData {
   path?: string;
   max_number_of_metric_to_return?: number;
+  url: string;
 }
 
 /**
