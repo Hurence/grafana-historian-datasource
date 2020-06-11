@@ -75,7 +75,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const namesToRefId = new Map<string, string>(options.targets.map(x => [x.name, x.refId] as [string, string]));
     const dataframes = historianQueryRsp.map(timeserie => {
       const frame = new MutableDataFrame({
-        refId: namesToRefId.get(timeserie.name),    
+        refId: namesToRefId.get(timeserie.name),
         fields: [
           { name: 'time', type: FieldType.time },
           { name: timeserie.name, type: FieldType.number },

@@ -1,10 +1,8 @@
-
 import { DataSource as HistorianDatasource } from '../DataSource';
 import { MyQuery } from '../types';
 import { dateTime, DataQueryRequest, MutableDataFrame, FieldType } from '@grafana/data';
 import { fakeHistorianBackend } from './FakeHistorian';
 import { testDatasourceConf } from './HistorianDatasourceTestConf';
-
 
 const ds = new HistorianDatasource(testDatasourceConf, fakeHistorianBackend);
 
@@ -17,30 +15,29 @@ describe('datasource query tests', () => {
       },
       targets: [
         {
-          name: "metric_1",
-          refId: "A"
+          name: 'metric_1',
+          refId: 'A',
         },
         {
-          name: "metric_2",
-          refId: "B"
-        }
+          name: 'metric_2',
+          refId: 'B',
+        },
       ],
-      maxDataPoints: 1000
-    }
+      maxDataPoints: 1000,
+    };
     const expectedFrames = [
-      buildDF("metric_1", "A", [
+      buildDF('metric_1', 'A', [
         [1.0, 1],
-        [1.0, 2]
+        [1.0, 2],
       ]),
-      buildDF("metric_2", "B", [
+      buildDF('metric_2', 'B', [
         [2.0, 1],
-        [2.0, 2]
-      ])
+        [2.0, 2],
+      ]),
     ];
-    return ds.query(options as unknown as DataQueryRequest<MyQuery>)
-      .then(data => {
-        expect(data.data).toEqual(expectedFrames);
-      });
+    return ds.query((options as unknown) as DataQueryRequest<MyQuery>).then(data => {
+      expect(data.data).toEqual(expectedFrames);
+    });
   });
 });
 
@@ -53,34 +50,33 @@ describe('datasource search tests', () => {
       },
       targets: [
         {
-          name: "metric_1",
-          refId: "A"
+          name: 'metric_1',
+          refId: 'A',
         },
         {
-          name: "metric_2",
-          refId: "B"
-        }
+          name: 'metric_2',
+          refId: 'B',
+        },
       ],
-      maxDataPoints: 1000
-    }
+      maxDataPoints: 1000,
+    };
     const expectedFrames = [
-      buildDF("metric_1", "A", [
+      buildDF('metric_1', 'A', [
         [1.0, 1],
-        [1.0, 2]
+        [1.0, 2],
       ]),
-      buildDF("metric_2", "B", [
+      buildDF('metric_2', 'B', [
         [2.0, 1],
-        [2.0, 2]
-      ])
+        [2.0, 2],
+      ]),
     ];
-    return ds.query(options as unknown as DataQueryRequest<MyQuery>)
-      .then(data => {
-        expect(data.data).toEqual(expectedFrames);
-      });
+    return ds.query((options as unknown) as DataQueryRequest<MyQuery>).then(data => {
+      expect(data.data).toEqual(expectedFrames);
+    });
   });
 });
 
-function buildDF(name: string, refId: string, points: [number, number][]): MutableDataFrame {
+function buildDF(name: string, refId: string, points: Array<[number, number]>): MutableDataFrame {
   const frame = new MutableDataFrame({
     refId: refId,
     fields: [

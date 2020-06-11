@@ -15,7 +15,7 @@ export interface HistorianQueryRequest {
 
 export interface TimeSerieHistorian {
   name: string;
-  datapoints: [number, number][];
+  datapoints: Array<[number, number]>;
   aggregations?: {
     min?: number;
     max?: number;
@@ -42,7 +42,6 @@ export const defaultQuery: Partial<MyQuery> = {};
 export interface MyDataSourceOptions extends DataSourceJsonData {
   path?: string;
   max_number_of_metric_to_return?: number;
-  url: string;
 }
 
 /**
