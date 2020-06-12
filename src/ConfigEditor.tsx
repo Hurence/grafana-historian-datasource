@@ -1,6 +1,6 @@
 import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms } from '@grafana/ui';
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { LegacyForms, DataSourceHttpSettings } from '@grafana/ui';
+import { DataSourcePluginOptionsEditorProps, DataSourceSettings } from '@grafana/data';
 import { MyDataSourceOptions, MySecureJsonData } from './types';
 
 const { SecretFormField, FormField } = LegacyForms;
@@ -10,11 +10,6 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
-  onUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onOptionsChange, options } = this.props;
-    const url = event.target.value;
-    onOptionsChange({ ...options, url });
-  };
 
   // Secure field (only sent to the backend)
   onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +46,15 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange({ ...options, jsonData });
   };
 
+  updateDataSourceSettings = (setting: DataSourceSettings<MyDataSourceOptions, {}>) => {
+    const { onOptionsChange, options } = this.props;
+    const datasourceSettings = {
+      ...options,
+      setting,
+    };
+    onOptionsChange(datasourceSettings);
+  }
+
   render() {
     const { options } = this.props;
     const { jsonData, secureJsonFields } = options;
@@ -59,15 +63,12 @@ export class ConfigEditor extends PureComponent<Props, State> {
     return (
       <div className="gf-form-group">
         <div className="gf-form">
-          <FormField
-            label="URL"
-            labelWidth={6}
-            inputWidth={20}
-            onChange={this.onUrlChange}
-            value={options.url || ''}
-            placeholder="http://historienserver:port/api/grafana/v0"
-            tooltip="The url to the historian grafana api. Usually just replace historienserver:port."
-          />
+          <DataSourceHttpSettings
+              defaultUrl="http://historienserver:port/api/grafana/v0"
+              dataSourceConfig={options}
+              onChange={this.updateDataSourceSettings}
+              showAccessOptions={true}
+            />        
         </div>
         <div className="gf-form">
           <FormField
