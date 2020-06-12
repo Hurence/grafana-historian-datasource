@@ -1,17 +1,28 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
+export interface MetricDescription {
+  name: string;
+  tags?: { [key: string]: string };
+  sampling?: {
+    algorithm?: string;
+    bucket_size?: number;
+  };
+}
+
+
 export interface HistorianQueryRequest {
   from: string;
   to: string;
-  names: string[];
+  names: (string| MetricDescription)[];
   format?: string;
   max_data_points?: number;
   tags?: { [key: string]: string };
   sampling?: {
     algorithm?: string;
-    bucket_size?: string;
+    bucket_size?: number;
   };
 }
+
 
 export interface TimeSerieHistorian {
   name: string;
@@ -30,7 +41,7 @@ export interface MyQuery extends DataQuery {
   tags?: { [key: string]: string };
   sampling?: {
     algorithm?: string;
-    bucket_size?: string;
+    bucket_size?: number;
   };
 }
 

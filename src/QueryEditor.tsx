@@ -1,6 +1,6 @@
 import defaults from 'lodash/defaults';
 
-import React, { ChangeEvent, PureComponent, useState } from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms, Select } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
@@ -20,7 +20,6 @@ const bucketSizesOptions = [
   { label: '10000', value: 10000 },
 ];
 const bucketSizeCustomOptions: Array<SelectableValue<number>> = [];
-var bucketSizeValue: SelectableValue<number> = { label: 'default', value: 0 };
 
 const samplingAlgorithmsOptions = [
   { label: 'default', value: 'NONE' },
@@ -29,29 +28,37 @@ const samplingAlgorithmsOptions = [
   { label: 'min', value: 'MIN' },
   { label: 'max', value: 'MAX' }
 ];
-var samplingAlgorithmValue: SelectableValue<string> = { label: 'default', value: 'NONE' };
 
 export class QueryEditor extends PureComponent<Props> {
 
+  bucketSizeValue: SelectableValue<number> = { label: 'default', value: 0 };
+  samplingAlgorithmValue: SelectableValue<string> = { label: 'default', value: 'NONE' };
 
   onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
     onChange({ ...query, name: event.target.value });
   };
 
-  onSamplingAlgorithmChange = (s: SelectableValue<string>) => {
-    console.error("hi", s);
-    //TODO
+  onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {
+    this.samplingAlgorithmValue = selected;  
+    const { onChange, query } = this.props;
+    onChange({ ...query, sampling: {
+      algorithm: this.samplingAlgorithmValue.value,
+      bucket_size: this.bucketSizeValue.value
+    }});  
   };
 
-  onBucketSizeChange = (s: SelectableValue<number>) => {
-    console.error("hi", s);
-    //TODO
+  onBucketSizeChange = (selected: SelectableValue<number>) => {
+    this.bucketSizeValue = selected;
+    const { onChange, query } = this.props;
+    onChange({ ...query, sampling: {
+      algorithm: this.samplingAlgorithmValue.value,
+      bucket_size: this.bucketSizeValue.value
+    }});
   };
 
-  onBucketSizeAddCustomOptions = (s: string) => {
-    console.error("hi 2", s);
-    //TODO
+  onBucketSizeAddCustomOptions = (newBucketSize: string) => {
+    bucketSizeCustomOptions.push({label: kebabCase(newBucketSize), value: Number(newBucketSize)})
   };
 
   //   <div className="gf-form">
@@ -86,14 +93,14 @@ export class QueryEditor extends PureComponent<Props> {
         <div className="gf-form">
           <Select
             options={[...samplingAlgorithmsOptions]}
-            value={samplingAlgorithmValue}
+            value={this.samplingAlgorithmValue}
             onChange={this.onSamplingAlgorithmChange}          
           />
         </div>
         <div className="gf-form">
           <Select
             options={[...bucketSizesOptions, ...bucketSizeCustomOptions]}
-            value={bucketSizeValue}
+            value={this.bucketSizeValue}
             onChange={this.onBucketSizeChange}
             allowCustomValue
             onCreateOption={this.onBucketSizeAddCustomOptions}

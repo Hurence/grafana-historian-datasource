@@ -98,15 +98,22 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const { range } = options;
     const from: string = range!.from.toISOString();
     const to: string = range!.to.toISOString();
-    const names = options.targets.map(target => target.name);
+    const metricDescriptions = options.targets.map(target => {
+      const metricDesc: any = {}
+      metricDesc.name = target.name;      
+      return { ...metricDesc, tags: target.tags, sampling: target.sampling }
+    });  
     const max_data_points: number | undefined = options.maxDataPoints;
     const tags = {};
-    const sampling = {};
+    const firstQueryWithSampling = options.targets.find(target => {
+      return target.sampling !== undefined;
+    });
+    const sampling = firstQueryWithSampling?.sampling;
 
     return {
       from: from,
       to: to,
-      names: names,
+      names: metricDescriptions,
       format: 'json',
       max_data_points: max_data_points,
       tags: tags,

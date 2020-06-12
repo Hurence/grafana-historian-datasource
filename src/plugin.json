@@ -43,5 +43,10 @@
         "method": "POST",
         "url": "{{.JsonData.dynamicUrl}}"
     }
-  ]  
+  ],
+  "queryOptions" : {
+    "cacheTimeout" : false,
+    "maxDataPoints" : true,
+    "minInterval" : false
+  }
 }
