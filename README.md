@@ -1,13 +1,20 @@
-# Grafana Data Source Plugin Template
+# Hurence data historian grafana datasource plugin
 
-[![CircleCI](https://circleci.com/gh/grafana/simple-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/simple-datasource/tree/master)
+More documentation about datasource plugins can be found in the [Docs](https://grafana.com/docs/grafana/latest/plugins/).
 
-This template is a starting point for building Grafana Data Source Plugins
+This plugin has been made to interact with The Hurence data historian rest api.
 
-## What is Grafana Data Source Plugin?
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+## Releases
 
-## Getting started
+There is currently only one stable release, here the compatibility matrix :
+
+historian datasource plugin | historian release
+--- | --- 
+1.0.0 | 1.3.0 
+
+
+## Development
+
 1. Install dependencies
 ```BASH
 yarn install
@@ -25,8 +32,191 @@ yarn watch
 yarn build
 ```
 
-## Learn more
-- [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
-- [Grafana documentation](https://grafana.com/docs/)
-- [Grafana Tutorials](https://grafana.com/tutorials/) - Grafana Tutorials are step-by-step guides that help you make the most of Grafana
-- [Grafana UI Library](https://developers.grafana.com/ui) - UI components to help you build interfaces using Grafana Design System
+## Description of requests/response for current version
+
+### Query API
+
+Example `timeserie` request from grafana :
+
+```json
+{
+  "panelId": 1,
+  "range": {
+    "from": "2016-10-31T06:33:44.866Z",
+    "to": "2016-10-31T12:33:44.866Z",
+    "raw": {
+      "from": "now-6h",
+      "to": "now"
+    }
+  },
+  "rangeRaw": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "interval": "30s",
+  "intervalMs": 30000,
+  "targets": [
+    { 
+        "target": "upper_50", 
+        "refId": "A", 
+        "type": "timeserie",
+        "tags": {
+            "pays": "France"
+        },
+        "sampling": {
+            "algorithm": "FIRST",
+            "bucket_size": 100
+        }
+    },
+    { 
+        "target": "upper_75", 
+        "refId": "B", 
+        "type": "timeserie",
+        "tags": {
+            "pays": "France"
+        },
+        "sampling": {
+            "algorithm": "AVG",
+            "bucket_size": 100
+        }
+    }
+  ],
+  "format": "json",
+  "maxDataPoints": 550
+}
+```
+
+the plugin will transfer this request to historian with this format :
+
+Note: the sampling option taken in account are the first at the moment.
+
+```json
+{
+  "from": "2016-10-31T06:33:44.866Z",
+  "to": "2016-10-31T12:33:44.866Z",
+  "names": [
+    {
+        "name": "upper_50",
+        "refId": "A",
+        "tags": {
+            "pays": "France"
+        }
+    },
+    {
+        "name": "upper_75",
+        "refId": "B",
+        "tags": {
+            "pays": "France"
+        }
+    }
+  ],
+  "format": "json",
+  "max_data_points": 1000,
+  "sampling": {
+    "algorithm": "FIRST",
+    "bucket_size": 100
+  }
+}
+```
+
+
+Then the response of the historian expected is like :
+
+```json
+[
+  {       
+    "refId": "A",
+    "name":"upper_50",
+    "tags": {
+        "pays" : "France"
+    },
+    "datapoints":[
+      [622,1450754160000],
+      [365,1450754220000]
+    ]
+  },
+  {
+    "refId": "B",
+    "name":"upper_75",
+    "tags": {
+        "pays" : "France"
+    },
+    "datapoints":[
+      [861,1450754160000],
+      [767,1450754220000]
+    ]
+  }
+]
+```
+
+This response will be transfered to grafana as :
+
+```json
+[
+  {
+    "refId": "A",
+    "target":"upper_50:[pays:France]",
+    "datapoints":[
+      [622,1450754160000],
+      [365,1450754220000]
+    ]
+  },
+  {
+    "refId": "B",
+    "target":"upper_75:[pays:France]",
+    "datapoints":[
+      [861,1450754160000],
+      [767,1450754220000]
+    ]
+  }
+]
+```
+
+
+### Search Values API
+
+The endpoint allow user to get existing metric names, tag names and tag values.
+
+```json
+{
+  "field": "name",
+  "query": "temp*",
+  "limit": 20
+}
+```
+
+ou
+
+```json
+{
+  "field": "usine",
+  "query": "u*",
+  "limit": 20
+}
+```
+
+The response format is
+
+```json
+{
+  "name" : ["..."],
+  "sensor" : ["..."],
+  "usine" : ["usine_1", "usine_2"]
+}
+```
+
+### Search Metric Tags API
+
+The endpoint allow user to get existing metric names, tag names and tag values.
+
+```json
+{
+  "limit": 20
+}
+```
+
+The response format is
+
+```json
+["sensor", "usine"]
+```
