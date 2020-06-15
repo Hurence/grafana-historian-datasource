@@ -45,7 +45,7 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
             <Input name="tag-value" label="tag value" onChange={this.onTagValueChange} value={this.props.tag.tagValue} />
           </Field>
           <Button variant="secondary" onClick={this.onDeleteTag}>
-            <IconButton tooltip="Remove this tag filter" name="minus" size="xs" surface="panel" />
+            <IconButton tooltip="Remove tag" name="trash-alt" size="xs" surface="panel" />
           </Button>
         </HorizontalGroup>      
       </div>

@@ -22,7 +22,14 @@ export class TagsEditor extends React.Component<Props, any> {
     return (
       <Button variant="secondary" onClick={this.props.onAddNewTagElement}>
         <IconButton tooltip="Add new tag filter" name="plus" size="md" surface="panel" />
-      tag
+      </Button>
+    );
+  }
+
+  RemoveAllTagButton = () => {
+    return (
+      <Button variant="secondary" onClick={this.props.onClearTags}>
+        <IconButton tooltip="Remove all tags" name="trash-alt" size="md" surface="panel" />        
       </Button>
     );
   }
@@ -44,16 +51,12 @@ export class TagsEditor extends React.Component<Props, any> {
       );
     });  
     return (
-      <div>        
-        <div>        
-          <Button variant="secondary" onClick={this.props.onClearTags}>
-            <IconButton tooltip="Clear all tags" name="trash-alt" size="md" surface="panel" />
-          </Button>
-        </div>
+      <div>            
         <div>
           <HorizontalGroup align="flex-start" wrap={true}>
             {tagsElems}     
             <this.AddTagButton />  
+            <this.RemoveAllTagButton/>
           </HorizontalGroup>                     
         </div>
       </div>
