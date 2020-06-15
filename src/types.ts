@@ -9,11 +9,10 @@ export interface MetricDescription {
   };
 }
 
-
 export interface HistorianQueryRequest {
   from: string;
   to: string;
-  names: (string| MetricDescription)[];
+  names: Array<string | MetricDescription>;
   format?: string;
   max_data_points?: number;
   tags?: { [key: string]: string };
@@ -22,7 +21,6 @@ export interface HistorianQueryRequest {
     bucket_size?: number;
   };
 }
-
 
 export interface TimeSerieHistorian {
   name: string;

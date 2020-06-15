@@ -10,7 +10,6 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
-
   // Secure field (only sent to the backend)
   onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
@@ -53,7 +52,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
       setting,
     };
     onOptionsChange(datasourceSettings);
-  }
+  };
 
   render() {
     const { options } = this.props;
@@ -64,11 +63,11 @@ export class ConfigEditor extends PureComponent<Props, State> {
       <div className="gf-form-group">
         <div className="gf-form">
           <DataSourceHttpSettings
-              defaultUrl="http://historienserver:port/api/grafana/v0"
-              dataSourceConfig={options}
-              onChange={this.updateDataSourceSettings}
-              showAccessOptions={true}
-            />        
+            defaultUrl="http://historienserver:port/api/grafana/v0"
+            dataSourceConfig={options}
+            onChange={this.updateDataSourceSettings}
+            showAccessOptions={true}
+          />
         </div>
         <div className="gf-form">
           <FormField

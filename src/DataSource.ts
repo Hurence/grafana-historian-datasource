@@ -99,10 +99,14 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const from: string = range!.from.toISOString();
     const to: string = range!.to.toISOString();
     const metricDescriptions = options.targets.map(target => {
-      const metricDesc: any = {}
-      metricDesc.name = target.name;      
-      return { ...metricDesc, tags: target.tags, sampling: target.sampling }
-    });  
+      const metricDesc: any = {};
+      metricDesc.name = target.name;
+      return { 
+        ...metricDesc,
+        tags: target.tags,
+        sampling: target.sampling 
+      };
+    });
     const max_data_points: number | undefined = options.maxDataPoints;
     const tags = {};
     const firstQueryWithSampling = options.targets.find(target => {
