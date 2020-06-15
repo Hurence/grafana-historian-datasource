@@ -101,10 +101,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const metricDescriptions = options.targets.map(target => {
       const metricDesc: any = {};
       metricDesc.name = target.name;
-      return { 
+      return {
         ...metricDesc,
         tags: target.tags,
-        sampling: target.sampling 
+        sampling: target.sampling,
       };
     });
     const max_data_points: number | undefined = options.maxDataPoints;

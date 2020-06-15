@@ -1,13 +1,12 @@
 import defaults from 'lodash/defaults';
 
 import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms, Select, Button, IconButton, HorizontalGroup, Field, Legend, Tooltip, Icon } from '@grafana/ui';
+import { LegacyForms, Select, HorizontalGroup, Field, Legend, Tooltip, Icon } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from '../types';
 import kebabCase from 'lodash/kebabCase';
 import { TagsEditor } from './TagsEditor';
-
 
 const { FormField } = LegacyForms;
 
@@ -49,12 +48,14 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
 
   private buildTagList(tags: { [key: string]: string }): TagKeyElement[] {
     return Object.keys(tags).map(tagKey => {
-      return { tagKey: tagKey, tagValue: tags[tagKey] }
-    })
+      return { tagKey: tagKey, tagValue: tags[tagKey] };
+    });
   }
 
   private buildTagObjectFromState(tagList: TagKeyElement[]): { [key: string]: string } | undefined {
-    if (tagList === undefined) return undefined;
+    if (tagList === undefined) {
+      return undefined;
+    }
     const toReturn: { [key: string]: string } = {};
     tagList.forEach(tag => {
       toReturn[tag.tagKey] = tag.tagValue;
@@ -169,10 +170,9 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
           />
         </div>
         <div className="gf-form-group">
-          <Legend 
-          description="Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account.">
+          <Legend description="Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account.">
             Sampling configuration
-          </Legend>            
+          </Legend>
 
           <HorizontalGroup align="center">
             <div className="gf-form">
@@ -183,7 +183,10 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
                   onChange={this.onSamplingAlgorithmChange}
                 />
               </Field>
-              <Tooltip content="The sampling algorithm to use when there is too many points matching the query.Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account." theme="info">
+              <Tooltip
+                content="The sampling algorithm to use when there is too many points matching the query.Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account."
+                theme="info"
+              >
                 <Icon name="info-circle" type="default" />
               </Tooltip>
             </div>
@@ -197,9 +200,12 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
                   onCreateOption={this.onBucketSizeAddCustomOptions}
                 />
               </Field>
-              <Tooltip content="The bucket size to use when sampling datapoints (aggregate every bucket size points into 1).
+              <Tooltip
+                content="The bucket size to use when sampling datapoints (aggregate every bucket size points into 1).
                  If bucket size is conflicting with max number of datapoints requested, it will be automatically
-                    recomputed so that there is at most <max datapoints> returned.Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account." theme="info">
+                    recomputed so that there is at most <max datapoints> returned.Sampling option is common to all metrics at the moment, the sampling option of the first metric will be taken in account."
+                theme="info"
+              >
                 <Icon name="info-circle" />
               </Tooltip>
             </div>

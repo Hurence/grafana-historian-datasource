@@ -8,10 +8,8 @@ type Props = {
   onUpdateTagElem: (index: number, newTagKey: TagKeyElement) => void;
   onRemoveTagElement: (index: number) => void;
   onAddNewTagElement: () => void;
-  onClearTags: () => void
+  onClearTags: () => void;
 };
-
-
 
 export class TagsEditor extends React.Component<Props, any> {
   constructor(props: Props) {
@@ -24,40 +22,40 @@ export class TagsEditor extends React.Component<Props, any> {
         <IconButton tooltip="Add new tag filter" name="plus" size="md" surface="panel" />
       </Button>
     );
-  }
+  };
 
   RemoveAllTagButton = () => {
     return (
       <Button variant="secondary" onClick={this.props.onClearTags}>
-        <IconButton tooltip="Remove all tags" name="trash-alt" size="md" surface="panel" />        
+        <IconButton tooltip="Remove all tags" name="trash-alt" size="md" surface="panel" />
       </Button>
     );
-  }
+  };
 
   render() {
     const tags = this.props.tags;
     if (tags === undefined || tags.length === 0) {
-      return <this.AddTagButton/>;
+      return <this.AddTagButton />;
     }
     const tagsElems: JSX.Element[] = tags.map((tag, index) => {
       return (
-            <KeyValueTagEditor
-            key={index}
-            index={index}
-            tag={tag}
-            onUpdateTagElem={this.props.onUpdateTagElem}
-            onRemoveTagElement={this.props.onRemoveTagElement}
-            />            
+        <KeyValueTagEditor
+          key={index}
+          index={index}
+          tag={tag}
+          onUpdateTagElem={this.props.onUpdateTagElem}
+          onRemoveTagElement={this.props.onRemoveTagElement}
+        />
       );
-    });  
+    });
     return (
-      <div>            
+      <div>
         <div>
           <HorizontalGroup align="flex-start" wrap={true}>
-            {tagsElems}     
-            <this.AddTagButton />  
-            <this.RemoveAllTagButton/>
-          </HorizontalGroup>                     
+            {tagsElems}
+            <this.AddTagButton />
+            <this.RemoveAllTagButton />
+          </HorizontalGroup>
         </div>
       </div>
     );

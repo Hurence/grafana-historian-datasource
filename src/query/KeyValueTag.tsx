@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { Field, Input, Button, IconButton, Label, HorizontalGroup } from '@grafana/ui';
+import { Field, Input, Button, IconButton, HorizontalGroup } from '@grafana/ui';
 import { TagKeyElement } from './QueryEditor';
 
 type Props = {
@@ -36,18 +36,23 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
   //label="Tag value" description="The tag value for the tag name to filter on"
   render() {
     return (
-      <div className="gf-form">      
+      <div className="gf-form">
         <HorizontalGroup align="normal" wrap={false}>
           <Field horizontal label="Tag" description="Name">
             <Input name="tag-name" label="tag key" onChange={this.onTagKeyChange} value={this.props.tag.tagKey} />
           </Field>
           <Field horizontal label="Tag" description="Value">
-            <Input name="tag-value" label="tag value" onChange={this.onTagValueChange} value={this.props.tag.tagValue} />
+            <Input
+              name="tag-value"
+              label="tag value"
+              onChange={this.onTagValueChange}
+              value={this.props.tag.tagValue}
+            />
           </Field>
           <Button variant="secondary" onClick={this.onDeleteTag}>
             <IconButton tooltip="Remove tag" name="trash-alt" size="xs" surface="panel" />
           </Button>
-        </HorizontalGroup>      
+        </HorizontalGroup>
       </div>
     );
   }
