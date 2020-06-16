@@ -1,14 +1,12 @@
 import defaults from 'lodash/defaults';
 
-import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms, Select, HorizontalGroup, Field, Legend, Tooltip, Icon } from '@grafana/ui';
+import React, { PureComponent } from 'react';
+import { Select, HorizontalGroup, Field, Legend, Tooltip, Icon, AsyncSelect } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from '../types';
 import kebabCase from 'lodash/kebabCase';
 import { TagsEditor } from './TagsEditor';
-
-const { FormField } = LegacyForms;
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
@@ -38,6 +36,7 @@ export interface TagKeyElement {
 export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[] }> {
   bucketSizeValue: SelectableValue<number> = { label: 'default', value: 0 };
   samplingAlgorithmValue: SelectableValue<string> = { label: 'default', value: 'NONE' };
+  metricNameValue: SelectableValue<string> = { label: '', value: '' };
 
   constructor(props: Props) {
     super(props);
@@ -63,9 +62,18 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     return toReturn;
   }
 
-  onMetricNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  // onMetricNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const { onChange, query } = this.props;
+  //   onChange({ ...query, name: event.target.value });
+  // };
+
+  onMetricNameChange = (selected: SelectableValue<string>) => {
+    this.metricNameValue = selected;
     const { onChange, query } = this.props;
-    onChange({ ...query, name: event.target.value });
+    onChange({
+      ...query,
+      name: this.metricNameValue.value || ""
+    });
   };
 
   onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {
@@ -148,18 +156,28 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * return all metric name matching metricNameInput
    * @param metricNameInput
    */
-  getMetricNames(metricNameInput: string) {
-    //TODO
-    // return this.props.datasource.metricFindQuery();
+  async getMetricNames(metricNameInput: string): Promise<Array<SelectableValue<string>>> {
+    return this.props.datasource
+      .getMetricNames(metricNameInput)
+      .then(metricNames => {
+        return metricNames.map(name => {
+          return {label:name, value: name}
+        });
+      });  
   }
 
   /**
    * return all tag names mathcing current input
    * @param tagNameInput
    */
-  getTagNames(tagNameInput: string) {
-    //TODO
-    // return this.props.datasource.metricFindQuery();
+  async getTagNames(tagNameInput: string): Promise<Array<SelectableValue<string>>> {
+    return this.props.datasource
+      .getTagNames(tagNameInput)
+      .then(tagNames => {
+        return tagNames.map(name => {
+          return {label:name, value: name}
+        });
+      });  
   }
 
   /**
@@ -168,25 +186,30 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param tagName
    * @param tagValueInput
    */
-  getTagValues(tagName: string, tagValueInput: string) {
-    //TODO
-    // return this.props.datasource.metricFindQuery();
+  async getTagValues(tagName: string, tagValueInput: string): Promise<Array<SelectableValue<string>>> {
+    return this.props.datasource
+    .getTagNameValues(tagName, tagValueInput)
+    .then(tagValues => {
+      return tagValues.map(name => {
+        return {label:name, value: name}
+      });
+    }); 
   }
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { name } = query;
-
+ 
+    //AsyncSelect onKeyDown
     return (
       <div className="gf-form-group">
         <Legend>Metric</Legend>
         <div className="gf-form">
-          <FormField
-            labelWidth={8}
-            value={name || ''}
-            onChange={this.onMetricNameChange}
-            label="Metric name"
-            tooltip="Name of the metric to query on"
+          <AsyncSelect
+            loadOptions={this.getMetricNames}
+            defaultOptions
+            value={this.metricNameValue}
+            onChange={this.onMetricNameChange}      
+            loadingMessage="Searching metrics..."      
           />
         </div>
         <div className="gf-form">
@@ -243,4 +266,48 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
       </div>
     );
   }
+
+  // const getKnobs = () => {
+  //   const disabled = boolean('Disabled', false, BEHAVIOUR_GROUP);
+  //   const invalid = boolean('Invalid', false, BEHAVIOUR_GROUP);
+  //   const loading = boolean('Loading', false, BEHAVIOUR_GROUP);
+  //   const prefixSuffixOpts = {
+  //     None: null,
+  //     Text: '$',
+  //     ...getAvailableIcons().reduce<Record<string, string>>((prev, c) => {
+  //       return {
+  //         ...prev,
+  //         [`Icon: ${c}`]: `icon-${c}`,
+  //       };
+  //     }, {}),
+  //   };
+  //   const VISUAL_GROUP = 'Visual options';
+  //   // ---
+  //   const prefix = select('Prefix', prefixSuffixOpts, null, VISUAL_GROUP);
+  //   const width = number('Width', 0, undefined, VISUAL_GROUP);
+  
+  //   let prefixEl: any = prefix;
+  //   if (prefix && prefix.match(/icon-/g)) {
+  //     prefixEl = <Icon name={prefix.replace(/icon-/g, '') as IconName} />;
+  //   }
+  
+  //   return {
+  //     width,
+  //     disabled,
+  //     invalid,
+  //     loading,
+  //     prefixEl,
+  //   };
+  // };
+  
+  // const getDynamicProps = () => {
+  //   const knobs = getKnobs();
+  //   return {
+  //     width: knobs.width,
+  //     disabled: knobs.disabled,
+  //     isLoading: knobs.loading,
+  //     invalid: knobs.invalid,
+  //     prefix: knobs.prefixEl,
+  //   };
+  // };
 }
