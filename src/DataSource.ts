@@ -10,9 +10,21 @@ import {
   DataQueryResponseData,
 } from '@grafana/data';
 
-import { MyQuery, MyDataSourceOptions, HistorianQueryRequest, TimeSerieHistorian } from './types';
+import {
+  MyQuery,
+  MyDataSourceOptions,
+  HistorianQueryRequest,
+  TimeSerieHistorian,
+  SearchValuesRequest,
+  SearchValuesResponse,
+  SearchTagNamesRequest,
+} from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
+  static API_QUERY_SUFFIX = '/query';
+  static API_SEARCH_VALUES_SUFFIX = '/search/values';
+  static API_SEARCH_TAG_NAMES_SUFFIX = '/search/tags';
+
   max_number_of_metric_to_return: number;
   url?: string;
   withCredentials: boolean | undefined;
@@ -40,7 +52,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     var request: HistorianQueryRequest = this.buildHistorianQueryRequest(options);
-    const httpRequest: BackendSrvRequest = this.buildHttpRequest(this.url + '/query', 'POST', request);
+    const httpRequest: BackendSrvRequest = this.buildHttpRequest(
+      this.url + DataSource.API_QUERY_SUFFIX,
+      'POST',
+      request
+    );
     return this.backendSrv
       .datasourceRequest(httpRequest)
       .then(rsp => {
@@ -72,10 +88,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     options: DataQueryRequest<MyQuery>,
     historianQueryRsp: TimeSerieHistorian[]
   ): DataQueryResponseData[] {
-    const namesToRefId = new Map<string, string>(options.targets.map(x => [x.name, x.refId] as [string, string]));
     const dataframes = historianQueryRsp.map(timeserie => {
       const frame = new MutableDataFrame({
-        refId: namesToRefId.get(timeserie.name),
+        refId: timeserie.refId,
         fields: [
           { name: 'time', type: FieldType.time },
           { name: timeserie.name, type: FieldType.number },
@@ -132,6 +147,92 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       } else {
         return { status: 'error', message: 'Error could not join datasource' };
       }
+    });
+  }
+
+  /**
+   * return all metric name matching metricNameInput
+   * @param metricNameInput
+   */
+  async getMetricNames(metricNameInput: string): Promise<string[]> {
+    return this.searchValues({
+      ...{
+        field: 'name',
+        limit: 20,
+      },
+      query: metricNameInput,
+    })
+      .then(response => response.name)
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
+  }
+
+  /**
+   * return all tag names mathcing current input
+   * @param tagNameInput
+   */
+  async getTagNames(tagNameInput: string): Promise<string[]> {
+    return this.searchTagNames({
+      ...{
+        limit: 20,
+      },
+      query: tagNameInput,
+    }).catch(error => {
+      console.error(error);
+      return [];
+    });
+  }
+
+  /**
+   * return all existing value for specified tagName(should be an existing tagName) matching the
+   * tagValueInput.
+   * @param tagName
+   * @param tagValueInput
+   */
+  async getTagNameValues(tagName: string, tagValueInput: string): Promise<string[]> {
+    return this.searchValues({
+      ...{
+        field: tagName,
+        limit: 20,
+      },
+      query: tagValueInput,
+    })
+      .then(response => response.name)
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
+  }
+
+  /**
+   * return all metric name matching metricNameInput
+   * @param metricNameInput
+   */
+  private async searchValues(request: SearchValuesRequest): Promise<SearchValuesResponse> {
+    const httpRequest: BackendSrvRequest = this.buildHttpRequest(
+      this.url + DataSource.API_SEARCH_VALUES_SUFFIX,
+      'POST',
+      request
+    );
+    return this.backendSrv.datasourceRequest(httpRequest).then(rsp => {
+      return rsp.data;
+    });
+  }
+
+  /**
+   * return all metric name matching metricNameInput
+   * @param metricNameInput
+   */
+  private async searchTagNames(request: SearchTagNamesRequest): Promise<string[]> {
+    const httpRequest: BackendSrvRequest = this.buildHttpRequest(
+      this.url + DataSource.API_SEARCH_TAG_NAMES_SUFFIX,
+      'POST',
+      request
+    );
+    return this.backendSrv.datasourceRequest(httpRequest).then(rsp => {
+      return rsp.data;
     });
   }
 }

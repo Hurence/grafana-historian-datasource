@@ -2,6 +2,7 @@ import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface MetricDescription {
   name: string;
+  refId?: string;
   tags?: { [key: string]: string };
   sampling?: {
     algorithm?: string;
@@ -24,7 +25,13 @@ export interface HistorianQueryRequest {
 
 export interface TimeSerieHistorian {
   name: string;
+  refId?: string;
+  tags?: { [key: string]: string };
   datapoints: Array<[number, number]>;
+  sampling?: {
+    algorithm?: string;
+    bucket_size?: number;
+  };
   aggregations?: {
     min?: number;
     max?: number;
@@ -58,4 +65,19 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
  */
 export interface MySecureJsonData {
   apiKey?: string;
+}
+
+export interface SearchValuesRequest {
+  field: string;
+  query?: string;
+  limit?: number;
+}
+
+export interface SearchTagNamesRequest {
+  query?: string;
+  limit?: number;
+}
+
+export interface SearchValuesResponse {
+  [fieldName: string]: string[];
 }

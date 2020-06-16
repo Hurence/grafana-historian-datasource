@@ -144,6 +144,35 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     });
   };
 
+  /**
+   * return all metric name matching metricNameInput
+   * @param metricNameInput
+   */
+  getMetricNames(metricNameInput: string) {
+    //TODO
+    // return this.props.datasource.metricFindQuery();
+  }
+
+  /**
+   * return all tag names mathcing current input
+   * @param tagNameInput
+   */
+  getTagNames(tagNameInput: string) {
+    //TODO
+    // return this.props.datasource.metricFindQuery();
+  }
+
+  /**
+   * return all existing value for specified tagName(should be an existing tagName) matching the
+   * tagValueInput.
+   * @param tagName
+   * @param tagValueInput
+   */
+  getTagValues(tagName: string, tagValueInput: string) {
+    //TODO
+    // return this.props.datasource.metricFindQuery();
+  }
+
   render() {
     const query = defaults(this.props.query, defaultQuery);
     const { name } = query;
