@@ -213,14 +213,16 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     //AsyncSelect onKeyDown
     return (
       <div className="gf-form-group">
-        <Legend>Metric</Legend>
+        <Legend>Metric to target</Legend>
         <div className="gf-form">
-          <AsyncSelect
-            loadOptions={this.getMetricNames.bind(this)}        
-            value={metricNameValue}         
-            onChange={this.onMetricNameChange}
-            loadingMessage="Searching metrics..."
-          />
+          <Field label="Metric name" description="The name of the metric">
+            <AsyncSelect
+              loadOptions={this.getMetricNames.bind(this)}
+              value={metricNameValue}
+              onChange={this.onMetricNameChange}
+              loadingMessage="Searching metrics..."
+            />
+          </Field>
         </div>
         <div className="gf-form">
           <TagsEditor

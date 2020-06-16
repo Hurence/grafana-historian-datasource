@@ -37,21 +37,20 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
   render() {
     return (
       <div className="gf-form">
-        <HorizontalGroup align="normal" wrap={false}>
-          <Field horizontal label="Tag" description="Name">
+        <HorizontalGroup align="center" wrap={false}>
+          <Field label="Tag" description="Name">
             <Input name="tag-name" label="tag key" onChange={this.onTagKeyChange} value={this.props.tag.tagKey} />
           </Field>
-          <Field horizontal label="Tag" description="Value">
+          <Field label="Tag" description="Value">
             <Input
               name="tag-value"
               label="tag value"
               onChange={this.onTagValueChange}
               value={this.props.tag.tagValue}
             />
-          </Field>
-          <Button variant="secondary" onClick={this.onDeleteTag}>
-            <IconButton tooltip="Remove tag" name="trash-alt" size="xs" surface="panel" />
-          </Button>
+          </Field>  
+          <IconButton onClick={this.onDeleteTag} name="trash-alt" size="md" tooltip="Remove tag" iconType="default">                        
+          </IconButton>
         </HorizontalGroup>
       </div>
     );
