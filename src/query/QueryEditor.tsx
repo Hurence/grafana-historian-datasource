@@ -1,12 +1,11 @@
-import defaults from 'lodash/defaults';
-
 import React, { PureComponent } from 'react';
 import { Select, HorizontalGroup, Field, Legend, Tooltip, Icon, AsyncSelect } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from '../DataSource';
-import { defaultQuery, MyDataSourceOptions, MyQuery } from '../types';
+import { MyDataSourceOptions, MyQuery } from '../types';
 import kebabCase from 'lodash/kebabCase';
 import { TagsEditor } from './TagsEditor';
+import { InputActionMeta } from '@grafana/ui/components/Select/types';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
@@ -34,9 +33,6 @@ export interface TagKeyElement {
 }
 
 export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[] }> {
-  bucketSizeValue: SelectableValue<number> = { label: 'default', value: 0 };
-  samplingAlgorithmValue: SelectableValue<string> = { label: 'default', value: 'NONE' };
-  metricNameValue: SelectableValue<string> = { label: '', value: '' };
 
   constructor(props: Props) {
     super(props);
@@ -68,34 +64,31 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   // };
 
   onMetricNameChange = (selected: SelectableValue<string>) => {
-    this.metricNameValue = selected;
     const { onChange, query } = this.props;
     onChange({
       ...query,
-      name: this.metricNameValue.value || ""
+      name: selected.value || '',
     });
   };
 
-  onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {
-    this.samplingAlgorithmValue = selected;
+  onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {    
     const { onChange, query } = this.props;
     onChange({
       ...query,
       sampling: {
-        algorithm: this.samplingAlgorithmValue.value,
-        bucket_size: this.bucketSizeValue.value,
+        algorithm: selected.value,
+        bucket_size: query.sampling?.bucket_size
       },
     });
   };
 
   onBucketSizeChange = (selected: SelectableValue<number>) => {
-    this.bucketSizeValue = selected;
     const { onChange, query } = this.props;
     onChange({
-      ...query,
+      ...query, 
       sampling: {
-        algorithm: this.samplingAlgorithmValue.value,
-        bucket_size: this.bucketSizeValue.value,
+        algorithm: query.sampling?.algorithm,
+        bucket_size: selected.value
       },
     });
   };
@@ -157,13 +150,12 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param metricNameInput
    */
   async getMetricNames(metricNameInput: string): Promise<Array<SelectableValue<string>>> {
-    return this.props.datasource
-      .getMetricNames(metricNameInput)
-      .then(metricNames => {
-        return metricNames.map(name => {
-          return {label:name, value: name}
-        });
-      });  
+    console.error("metricNameInput", metricNameInput)
+    return this.props.datasource.getMetricNames(metricNameInput).then(metricNames => {
+      return metricNames.map(name => {
+        return { label: name, value: name };
+      });
+    });
   }
 
   /**
@@ -171,13 +163,11 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param tagNameInput
    */
   async getTagNames(tagNameInput: string): Promise<Array<SelectableValue<string>>> {
-    return this.props.datasource
-      .getTagNames(tagNameInput)
-      .then(tagNames => {
-        return tagNames.map(name => {
-          return {label:name, value: name}
-        });
-      });  
+    return this.props.datasource.getTagNames(tagNameInput).then(tagNames => {
+      return tagNames.map(name => {
+        return { label: name, value: name };
+      });
+    });
   }
 
   /**
@@ -187,29 +177,49 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param tagValueInput
    */
   async getTagValues(tagName: string, tagValueInput: string): Promise<Array<SelectableValue<string>>> {
-    return this.props.datasource
-    .getTagNameValues(tagName, tagValueInput)
-    .then(tagValues => {
+    return this.props.datasource.getTagNameValues(tagName, tagValueInput).then(tagValues => {
       return tagValues.map(name => {
-        return {label:name, value: name}
+        return { label: name, value: name };
       });
-    }); 
+    });
+  }
+
+  private getBucketSizeValue(): SelectableValue<number> {
+    if (this.props.query.sampling?.bucket_size !== undefined) {
+      return { label: this.props.query.sampling?.bucket_size.toString(), value: this.props.query.sampling?.bucket_size }
+    }
+    return { label: 'default', value: 0 };
+  }
+
+  private getSamplingAlgoValue(): SelectableValue<string> {
+    if (this.props.query.sampling?.bucket_size !== undefined) {
+      return { label: this.props.query.sampling?.algorithm, value: this.props.query.sampling?.algorithm }
+    }
+    return { label: 'default', value: 'NONE' };
+  }
+
+
+  private getNameValue(): SelectableValue<string> {
+    if (this.props.query.sampling?.bucket_size !== undefined) {
+      return { label: this.props.query.name, value: this.props.query.name }
+    }
+    return { label: '', value: '' };
   }
 
   render() {
-    const query = defaults(this.props.query, defaultQuery);
- 
+    const bucketSizeValue: SelectableValue<number> = this.getBucketSizeValue();
+    const samplingAlgorithmValue: SelectableValue<string> = this.getSamplingAlgoValue();
+    const metricNameValue: SelectableValue<string> = this.getNameValue();
     //AsyncSelect onKeyDown
     return (
       <div className="gf-form-group">
         <Legend>Metric</Legend>
         <div className="gf-form">
           <AsyncSelect
-            loadOptions={this.getMetricNames}
-            defaultOptions
-            value={this.metricNameValue}
-            onChange={this.onMetricNameChange}      
-            loadingMessage="Searching metrics..."      
+            loadOptions={this.getMetricNames.bind(this)}        
+            value={metricNameValue}         
+            onChange={this.onMetricNameChange}
+            loadingMessage="Searching metrics..."
           />
         </div>
         <div className="gf-form">
@@ -231,7 +241,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
               <Field label="Algorithm" description="Sampling algorithm">
                 <Select
                   options={[...samplingAlgorithmsOptions]}
-                  value={this.samplingAlgorithmValue}
+                  value={samplingAlgorithmValue}
                   onChange={this.onSamplingAlgorithmChange}
                 />
               </Field>
@@ -246,7 +256,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
               <Field label="Bucket size" description="Bucket size">
                 <Select
                   options={[...bucketSizesOptions, ...bucketSizeCustomOptions]}
-                  value={this.bucketSizeValue}
+                  value={bucketSizeValue}
                   onChange={this.onBucketSizeChange}
                   allowCustomValue
                   onCreateOption={this.onBucketSizeAddCustomOptions}
@@ -263,7 +273,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
             </div>
           </HorizontalGroup>
         </div>
-      </div>
+      </div> 
     );
   }
 
@@ -285,12 +295,12 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   //   // ---
   //   const prefix = select('Prefix', prefixSuffixOpts, null, VISUAL_GROUP);
   //   const width = number('Width', 0, undefined, VISUAL_GROUP);
-  
+
   //   let prefixEl: any = prefix;
   //   if (prefix && prefix.match(/icon-/g)) {
   //     prefixEl = <Icon name={prefix.replace(/icon-/g, '') as IconName} />;
   //   }
-  
+
   //   return {
   //     width,
   //     disabled,
@@ -299,7 +309,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   //     prefixEl,
   //   };
   // };
-  
+
   // const getDynamicProps = () => {
   //   const knobs = getKnobs();
   //   return {

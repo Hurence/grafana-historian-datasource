@@ -180,7 +180,7 @@ The endpoint allow user to get existing metric names, tag names and tag values.
 ```json
 {
   "field": "name",
-  "query": "temp*",
+  "query": "temp",
   "limit": 20
 }
 ```
@@ -190,7 +190,7 @@ ou
 ```json
 {
   "field": "usine",
-  "query": "u*",
+  "query": "u",
   "limit": 20
 }
 ```
