@@ -1,7 +1,7 @@
 import React from 'react';
 import { KeyValueTagEditor } from './KeyValueTag';
 import { TagKeyElement } from './QueryEditor';
-import { Button, IconButton, HorizontalGroup } from '@grafana/ui';
+import { IconButton, HorizontalGroup } from '@grafana/ui';
 
 type Props = {
   tags: TagKeyElement[];
@@ -18,15 +18,25 @@ export class TagsEditor extends React.Component<Props, any> {
 
   AddTagButton = () => {
     return (
-      <IconButton onClick={this.props.onAddNewTagElement} tooltip="Add new tag filter" name="plus" size="xxl" surface="panel" >        
-      </IconButton>
+      <IconButton
+        onClick={this.props.onAddNewTagElement}
+        tooltip="Add new tag filter"
+        name="plus"
+        size="xxl"
+        surface="panel"
+      ></IconButton>
     );
   };
 
   RemoveAllTagButton = () => {
     return (
-      <IconButton onClick={this.props.onClearTags} tooltip="Remove all tags" name="trash-alt" size="xxl" surface="panel">        
-      </IconButton>
+      <IconButton
+        onClick={this.props.onClearTags}
+        tooltip="Remove all tags"
+        name="trash-alt"
+        size="xxl"
+        surface="panel"
+      ></IconButton>
     );
   };
 
@@ -48,11 +58,11 @@ export class TagsEditor extends React.Component<Props, any> {
     });
     return (
       <div>
-          <HorizontalGroup align="center" wrap={true}>
-            {tagsElems}
-            <this.AddTagButton />
-            <this.RemoveAllTagButton />
-          </HorizontalGroup>  
+        <HorizontalGroup align="center" wrap={true}>
+          {tagsElems}
+          <this.AddTagButton />
+          <this.RemoveAllTagButton />
+        </HorizontalGroup>
       </div>
     );
   }

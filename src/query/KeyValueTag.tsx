@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { Field, Input, Button, IconButton, HorizontalGroup } from '@grafana/ui';
+import { Field, Input, IconButton, HorizontalGroup } from '@grafana/ui';
 import { TagKeyElement } from './QueryEditor';
 
 type Props = {
@@ -48,9 +48,14 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
               onChange={this.onTagValueChange}
               value={this.props.tag.tagValue}
             />
-          </Field>  
-          <IconButton onClick={this.onDeleteTag} name="trash-alt" size="md" tooltip="Remove tag" iconType="default">                        
-          </IconButton>
+          </Field>
+          <IconButton
+            onClick={this.onDeleteTag}
+            name="trash-alt"
+            size="md"
+            tooltip="Remove tag"
+            iconType="default"
+          ></IconButton>
         </HorizontalGroup>
       </div>
     );

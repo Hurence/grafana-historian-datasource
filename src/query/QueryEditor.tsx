@@ -5,7 +5,6 @@ import { DataSource } from '../DataSource';
 import { MyDataSourceOptions, MyQuery } from '../types';
 import kebabCase from 'lodash/kebabCase';
 import { TagsEditor } from './TagsEditor';
-import { InputActionMeta } from '@grafana/ui/components/Select/types';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
@@ -33,7 +32,6 @@ export interface TagKeyElement {
 }
 
 export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[] }> {
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -71,13 +69,13 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     });
   };
 
-  onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {    
+  onSamplingAlgorithmChange = (selected: SelectableValue<string>) => {
     const { onChange, query } = this.props;
     onChange({
       ...query,
       sampling: {
         algorithm: selected.value,
-        bucket_size: query.sampling?.bucket_size
+        bucket_size: query.sampling?.bucket_size,
       },
     });
   };
@@ -85,10 +83,10 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   onBucketSizeChange = (selected: SelectableValue<number>) => {
     const { onChange, query } = this.props;
     onChange({
-      ...query, 
+      ...query,
       sampling: {
         algorithm: query.sampling?.algorithm,
-        bucket_size: selected.value
+        bucket_size: selected.value,
       },
     });
   };
@@ -150,7 +148,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param metricNameInput
    */
   async getMetricNames(metricNameInput: string): Promise<Array<SelectableValue<string>>> {
-    console.error("metricNameInput", metricNameInput)
+    console.error('metricNameInput', metricNameInput);
     return this.props.datasource.getMetricNames(metricNameInput).then(metricNames => {
       return metricNames.map(name => {
         return { label: name, value: name };
@@ -186,22 +184,24 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
 
   private getBucketSizeValue(): SelectableValue<number> {
     if (this.props.query.sampling?.bucket_size !== undefined) {
-      return { label: this.props.query.sampling?.bucket_size.toString(), value: this.props.query.sampling?.bucket_size }
+      return {
+        label: this.props.query.sampling?.bucket_size.toString(),
+        value: this.props.query.sampling?.bucket_size,
+      };
     }
     return { label: 'default', value: 0 };
   }
 
   private getSamplingAlgoValue(): SelectableValue<string> {
     if (this.props.query.sampling?.bucket_size !== undefined) {
-      return { label: this.props.query.sampling?.algorithm, value: this.props.query.sampling?.algorithm }
+      return { label: this.props.query.sampling?.algorithm, value: this.props.query.sampling?.algorithm };
     }
     return { label: 'default', value: 'NONE' };
   }
 
-
   private getNameValue(): SelectableValue<string> {
     if (this.props.query.sampling?.bucket_size !== undefined) {
-      return { label: this.props.query.name, value: this.props.query.name }
+      return { label: this.props.query.name, value: this.props.query.name };
     }
     return { label: '', value: '' };
   }
@@ -275,7 +275,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
             </div>
           </HorizontalGroup>
         </div>
-      </div> 
+      </div>
     );
   }
 
