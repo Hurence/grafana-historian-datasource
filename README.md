@@ -198,11 +198,7 @@ ou
 The response format is
 
 ```json
-{
-  "name" : ["..."],
-  "sensor" : ["..."],
-  "usine" : ["usine_1", "usine_2"]
-}
+["usine_1", "usine_2"]
 ```
 
 ### Search Metric Tags API

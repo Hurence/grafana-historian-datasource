@@ -1,4 +1,4 @@
-import { BackendSrv, BackendSrvRequest } from '@grafana/runtime';
+import { BackendSrv, BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
 
 import {
   DataQueryRequest,
@@ -16,7 +16,6 @@ import {
   HistorianQueryRequest,
   TimeSerieHistorian,
   SearchValuesRequest,
-  SearchValuesResponse,
   SearchTagNamesRequest,
 } from './types';
 
@@ -34,14 +33,14 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   };
   backendSrv: BackendSrv;
 
-  constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>, backendSrv: BackendSrv) {
+  constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
     // this.type = instanceSettings.type;
     this.url = instanceSettings.url;
     // this.url = instanceSettings.url;
     // this.name = instanceSettings.name;
     // this.url = instanceSettings.jsonData.url;
-    this.backendSrv = backendSrv;
+    this.backendSrv = getBackendSrv();
     this.max_number_of_metric_to_return = instanceSettings.jsonData.max_number_of_metric_to_return || 50;
     this.withCredentials = instanceSettings.withCredentials;
     this.headers = { 'Content-Type': 'application/json' };
@@ -162,7 +161,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       },
       query: metricNameInput,
     })
-      .then(response => response.name)
       .catch(error => {
         console.error(error);
         return [];
@@ -191,7 +189,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
    * @param tagName
    * @param tagValueInput
    */
-  async getTagNameValues(tagName: string, tagValueInput: string): Promise<string[]> {
+  async getValuesForTagName(tagName: string, tagValueInput: string): Promise<string[]> {
     return this.searchValues({
       ...{
         field: tagName,
@@ -199,7 +197,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       },
       query: tagValueInput,
     })
-      .then(response => response.name)
       .catch(error => {
         console.error(error);
         return [];
@@ -210,7 +207,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
    * return all metric name matching metricNameInput
    * @param metricNameInput
    */
-  private async searchValues(request: SearchValuesRequest): Promise<SearchValuesResponse> {
+  private async searchValues(request: SearchValuesRequest): Promise<string[]> {
     const httpRequest: BackendSrvRequest = this.buildHttpRequest(
       this.url + DataSource.API_SEARCH_VALUES_SUFFIX,
       'POST',

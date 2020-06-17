@@ -175,7 +175,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param tagValueInput
    */
   async getTagValues(tagName: string, tagValueInput: string): Promise<Array<SelectableValue<string>>> {
-    return this.props.datasource.getTagNameValues(tagName, tagValueInput).then(tagValues => {
+    return this.props.datasource.getValuesForTagName(tagName, tagValueInput).then(tagValues => {
       return tagValues.map(name => {
         return { label: name, value: name };
       });

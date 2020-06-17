@@ -77,7 +77,3 @@ export interface SearchTagNamesRequest {
   query?: string;
   limit?: number;
 }
-
-export interface SearchValuesResponse {
-  [fieldName: string]: string[];
-}
