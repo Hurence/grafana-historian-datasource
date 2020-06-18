@@ -2,6 +2,7 @@ import React from 'react';
 import { KeyValueTagEditor } from './KeyValueTag';
 import { TagKeyElement } from './QueryEditor';
 import { IconButton, HorizontalGroup } from '@grafana/ui';
+import { SelectableValue } from '@grafana/data';
 
 type Props = {
   tags: TagKeyElement[];
@@ -9,6 +10,8 @@ type Props = {
   onRemoveTagElement: (index: number) => void;
   onAddNewTagElement: () => void;
   onClearTags: () => void;
+  getTagValues: (tagName: string, tagValueInput: string) => Promise<Array<SelectableValue<string>>>;
+  getTagNames: (tagNameInput: string) => Promise<Array<SelectableValue<string>>>;
 };
 
 export class TagsEditor extends React.Component<Props, any> {
@@ -53,6 +56,8 @@ export class TagsEditor extends React.Component<Props, any> {
           tag={tag}
           onUpdateTagElem={this.props.onUpdateTagElem}
           onRemoveTagElement={this.props.onRemoveTagElement}
+          getTagValues={this.props.getTagValues}
+          getTagNames={this.props.getTagNames}
         />
       );
     });

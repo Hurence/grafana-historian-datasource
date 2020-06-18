@@ -2,9 +2,8 @@ import { BackendSrv, BackendSrvRequest } from '@grafana/runtime';
 import { TimeSerieHistorian } from 'types';
 import { DataSource } from 'DataSource';
 
-
-export const FAKE_SEARCH_VALUES_RSP = ["value1", "value2"];
-export const FAKE_TAG_NAME_VALUES_RSP = ["tag1", "tag2"];
+export const FAKE_SEARCH_VALUES_RSP = ['value1', 'value2'];
+export const FAKE_TAG_NAME_VALUES_RSP = ['tag1', 'tag2'];
 
 class MyFakeHistorian implements BackendSrv {
   get(url: string, params?: any, requestId?: string | undefined): Promise<any> {
@@ -26,46 +25,82 @@ class MyFakeHistorian implements BackendSrv {
     throw new Error('Method not implemented.');
   }
   async datasourceRequest(options: BackendSrvRequest): Promise<any> {
-    console.log("call at url :", options.url);    
-    switch(options.url) { 
-      case DataSource.API_QUERY_SUFFIX: { 
-        const timeseries: TimeSerieHistorian[] = [
-          {
-            refId: "A",
-            name: 'metric_1',
-            datapoints: [
-              [1.0, 1],
-              [1.0, 2],
-            ],
-          },
-          {
-            refId: "B",
-            name: 'metric_2',
-            datapoints: [
-              [2.0, 1],
-              [2.0, 2],
-            ],
-          },
-        ];
-        return {
-          data: timeseries,
-        };
-      } 
-      case DataSource.API_SEARCH_VALUES_SUFFIX: {         
+    console.log('call at url :', options.url);
+    switch (options.url) {      
+      case DataSource.API_QUERY_SUFFIX: {
+        console.log('requestId :', options.requestId);
+        switch (options.requestId) {
+          case 'withTags': {
+            console.log('withTags request');
+            const timeseries: TimeSerieHistorian[] = [
+              {
+                refId: 'A',
+                name: 'metric_1',
+                tags: {
+                  tag1: 'value_tag_1',
+                  tag2: 'value_tag_2',
+                },
+                datapoints: [
+                  [1.0, 1],
+                  [1.0, 2],
+                ],
+              },
+              {
+                refId: 'B',
+                name: 'metric_2',
+                tags: {
+                  tag1: 'value_tag_1_2',
+                },
+                datapoints: [
+                  [2.0, 1],
+                  [2.0, 2],
+                ],
+              },
+            ];
+            return {
+              data: timeseries,
+            };
+          }
+          default: {
+            const timeseries: TimeSerieHistorian[] = [
+              {
+                refId: 'A',
+                name: 'metric_1',
+                datapoints: [
+                  [1.0, 1],
+                  [1.0, 2],
+                ],
+              },
+              {
+                refId: 'B',
+                name: 'metric_2',
+                datapoints: [
+                  [2.0, 1],
+                  [2.0, 2],
+                ],
+              },
+            ];
+            return {
+              data: timeseries,
+            };
+          }
+        }
+      }
+      case DataSource.API_SEARCH_VALUES_SUFFIX: {
         return {
           data: FAKE_SEARCH_VALUES_RSP,
         };
-      } 
-      case DataSource.API_SEARCH_TAG_NAMES_SUFFIX: {      
+      }
+      case DataSource.API_SEARCH_TAG_NAMES_SUFFIX: {
         return {
           data: FAKE_TAG_NAME_VALUES_RSP,
-        };        
-     } 
-      default: { 
-         console.error("url not known", options.url);
-         break; 
-      } 
-   }         
+        };
+      }
+      default: {
+        console.error('url not known', options.url);
+        break;
+      }
+    }
   }
 }
 

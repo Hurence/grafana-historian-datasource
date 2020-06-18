@@ -1,9 +1,9 @@
 import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms, DataSourceHttpSettings } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps, DataSourceSettings } from '@grafana/data';
-import { MyDataSourceOptions, MySecureJsonData } from './types';
+import { MyDataSourceOptions } from './types';
 
-const { SecretFormField, FormField } = LegacyForms;
+const { FormField } = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
@@ -49,15 +49,14 @@ export class ConfigEditor extends PureComponent<Props, State> {
     const { onOptionsChange, options } = this.props;
     const datasourceSettings = {
       ...options,
-      setting,
+      ...setting,
     };
-    onOptionsChange(datasourceSettings);
+    onOptionsChange({ ...options, ...datasourceSettings });
   };
 
   render() {
     const { options } = this.props;
-    const { jsonData, secureJsonFields } = options;
-    const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
+    const { jsonData } = options;
 
     return (
       <div className="gf-form-group">
@@ -79,21 +78,6 @@ export class ConfigEditor extends PureComponent<Props, State> {
             placeholder="Enter a number"
             tooltip="The mximum number of metric name to return when filling metric name in query editors"
           />
-        </div>
-
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            <SecretFormField
-              isConfigured={(secureJsonFields && secureJsonFields.apiKey) as boolean}
-              value={secureJsonData.apiKey || ''}
-              label="API Key"
-              placeholder="secure json field (backend only)"
-              labelWidth={6}
-              inputWidth={20}
-              onReset={this.onResetAPIKey}
-              onChange={this.onAPIKeyChange}
-            />
-          </div>
         </div>
       </div>
     );

@@ -9,7 +9,7 @@ import { TagsEditor } from './TagsEditor';
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
 const bucketSizesOptions = [
-  { label: 'default', value: 0 },
+  { label: 'default', value: 1 },
   { label: '100', value: 100 },
   { label: '250', value: 250 },
   { label: '500', value: 500 },
@@ -56,11 +56,6 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     return toReturn;
   }
 
-  // onMetricNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { onChange, query } = this.props;
-  //   onChange({ ...query, name: event.target.value });
-  // };
-
   onMetricNameChange = (selected: SelectableValue<string>) => {
     const { onChange, query } = this.props;
     onChange({
@@ -96,7 +91,12 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   };
 
   onClearTags = () => {
-    this.setState({ tagList: [] });
+    this.setState(state => {
+      this.updateTagInQuery([]);
+      return {
+        tagList: [],
+      };
+    });
   };
 
   private updateTagInQuery(tagList: TagKeyElement[]) {
@@ -231,6 +231,8 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
             onRemoveTagElement={this.onRemoveTagElement}
             onAddNewTagElement={this.onAddNewTagElement}
             onClearTags={this.onClearTags}
+            getTagValues={this.getTagValues.bind(this)}
+            getTagNames={this.getTagNames.bind(this)}
           />
         </div>
         <div className="gf-form-group">

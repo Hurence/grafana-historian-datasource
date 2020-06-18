@@ -206,9 +206,7 @@ The response format is
 The endpoint allow user to get existing metric names, tag names and tag values.
 
 ```json
-{
-  "limit": 20
-}
+{}
 ```
 
 The response format is

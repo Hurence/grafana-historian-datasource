@@ -54,7 +54,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const httpRequest: BackendSrvRequest = this.buildHttpRequest(
       this.url + DataSource.API_QUERY_SUFFIX,
       'POST',
-      request
+      request,
+      options.requestId
     );
     return this.backendSrv
       .datasourceRequest(httpRequest)
@@ -69,17 +70,19 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       });
   }
 
-  private buildHttpRequest(url: string, method: string, data?: any): BackendSrvRequest {
-    const toReturn = {
+  private buildHttpRequest(url: string, method: string, data?: any, requestId?:string): BackendSrvRequest {
+    const toReturn: any = {  
       url: url,
       headers: this.headers,
       method: method,
-      data: data,
       withCredentials: this.withCredentials,
     };
     if (data !== undefined) {
       toReturn.data = data;
-    }
+    } 
+    if (requestId !== undefined) {
+      toReturn.requestId = requestId;
+    } 
     return toReturn;
   }
 
@@ -89,17 +92,19 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   ): DataQueryResponseData[] {
     const dataframes = historianQueryRsp.map(timeserie => {
       const frame = new MutableDataFrame({
+        name: timeserie.name,
         refId: timeserie.refId,
         fields: [
           { name: 'time', type: FieldType.time },
-          { name: timeserie.name, type: FieldType.number },
+          { name: timeserie.name, labels: timeserie.tags, type: FieldType.number },
         ],
       });
 
       timeserie.datapoints.forEach(timestampValues => {
         const value: any = {};
         value.time = timestampValues[1];
-        value[timeserie.name] = timestampValues[1];
+        // value.value = timestampValues[0];
+        value[timeserie.name] = timestampValues[0];
         frame.add(value);
       });
       return frame;
@@ -160,11 +165,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         limit: 20,
       },
       query: metricNameInput,
-    })
-      .catch(error => {
-        console.error(error);
-        return [];
-      });
+    }).catch(error => {
+      console.error(error);
+      return [];
+    });
   }
 
   /**
@@ -196,11 +200,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         limit: 20,
       },
       query: tagValueInput,
-    })
-      .catch(error => {
-        console.error(error);
-        return [];
-      });
+    }).catch(error => {
+      console.error(error);
+      return [];
+    });
   }
 
   /**
