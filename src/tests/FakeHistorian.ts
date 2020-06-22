@@ -26,7 +26,7 @@ class MyFakeHistorian implements BackendSrv {
   }
   async datasourceRequest(options: BackendSrvRequest): Promise<any> {
     console.log('call at url :', options.url);
-    switch (options.url) {      
+    switch (options.url) {
       case DataSource.API_QUERY_SUFFIX: {
         console.log('requestId :', options.requestId);
         switch (options.requestId) {

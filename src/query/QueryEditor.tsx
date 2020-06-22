@@ -31,11 +31,18 @@ export interface TagKeyElement {
   tagValue: string;
 }
 
-export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[] }> {
+export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]; isBuketSizeInvalid: boolean }> {
   constructor(props: Props) {
     super(props);
+    const bucketSize: number | undefined = this.props.query.sampling?.bucket_size;
+    const tagList = this.buildTagList(this.props.query.tags || {});
+    let isBuketSizeInvalid = false;
+    if (bucketSize !== undefined && bucketSize < 0) {
+      isBuketSizeInvalid = true;
+    }
     this.state = {
-      tagList: this.buildTagList(this.props.query.tags || {}),
+      tagList: tagList,
+      isBuketSizeInvalid: isBuketSizeInvalid,
     };
   }
 
@@ -84,6 +91,13 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
         bucket_size: selected.value,
       },
     });
+    this.setState(state => {
+      let isbucketSizeValid = selected.value !== undefined && selected.value > 0;
+      return {
+        ...state,
+        isBuketSizeInvalid: !isbucketSizeValid,
+      };
+    });
   };
 
   onBucketSizeAddCustomOptions = (newBucketSize: string) => {
@@ -94,6 +108,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     this.setState(state => {
       this.updateTagInQuery([]);
       return {
+        ...state,
         tagList: [],
       };
     });
@@ -122,6 +137,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
       });
       this.updateTagInQuery(list);
       return {
+        ...state,
         tagList: list,
       };
     });
@@ -138,6 +154,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
       const list = state.tagList.filter((item, i) => index !== i);
       this.updateTagInQuery(list);
       return {
+        ...state,
         tagList: list,
       };
     });
@@ -262,6 +279,7 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
                   options={[...bucketSizesOptions, ...bucketSizeCustomOptions]}
                   value={bucketSizeValue}
                   onChange={this.onBucketSizeChange}
+                  invalid={this.state.isBuketSizeInvalid}
                   allowCustomValue
                   onCreateOption={this.onBucketSizeAddCustomOptions}
                 />
@@ -280,48 +298,4 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
       </div>
     );
   }
-
-  // const getKnobs = () => {
-  //   const disabled = boolean('Disabled', false, BEHAVIOUR_GROUP);
-  //   const invalid = boolean('Invalid', false, BEHAVIOUR_GROUP);
-  //   const loading = boolean('Loading', false, BEHAVIOUR_GROUP);
-  //   const prefixSuffixOpts = {
-  //     None: null,
-  //     Text: '$',
-  //     ...getAvailableIcons().reduce<Record<string, string>>((prev, c) => {
-  //       return {
-  //         ...prev,
-  //         [`Icon: ${c}`]: `icon-${c}`,
-  //       };
-  //     }, {}),
-  //   };
-  //   const VISUAL_GROUP = 'Visual options';
-  //   // ---
-  //   const prefix = select('Prefix', prefixSuffixOpts, null, VISUAL_GROUP);
-  //   const width = number('Width', 0, undefined, VISUAL_GROUP);
-
-  //   let prefixEl: any = prefix;
-  //   if (prefix && prefix.match(/icon-/g)) {
-  //     prefixEl = <Icon name={prefix.replace(/icon-/g, '') as IconName} />;
-  //   }
-
-  //   return {
-  //     width,
-  //     disabled,
-  //     invalid,
-  //     loading,
-  //     prefixEl,
-  //   };
-  // };
-
-  // const getDynamicProps = () => {
-  //   const knobs = getKnobs();
-  //   return {
-  //     width: knobs.width,
-  //     disabled: knobs.disabled,
-  //     isLoading: knobs.loading,
-  //     invalid: knobs.invalid,
-  //     prefix: knobs.prefixEl,
-  //   };
-  // };
 }

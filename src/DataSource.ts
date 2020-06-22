@@ -70,8 +70,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       });
   }
 
-  private buildHttpRequest(url: string, method: string, data?: any, requestId?:string): BackendSrvRequest {
-    const toReturn: any = {  
+  private buildHttpRequest(url: string, method: string, data?: any, requestId?: string): BackendSrvRequest {
+    const toReturn: any = {
       url: url,
       headers: this.headers,
       method: method,
@@ -79,10 +79,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     };
     if (data !== undefined) {
       toReturn.data = data;
-    } 
+    }
     if (requestId !== undefined) {
       toReturn.requestId = requestId;
-    } 
+    }
     return toReturn;
   }
 

@@ -10,7 +10,7 @@ There is currently only one stable release, here the compatibility matrix :
 
 historian datasource plugin | historian release
 --- | --- 
-1.0.0 | 1.3.0 
+1.0.0 | 1.3.5
 
 
 ## Development
