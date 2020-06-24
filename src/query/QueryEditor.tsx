@@ -21,7 +21,7 @@ const bucketSizeCustomOptions: Array<SelectableValue<number>> = [];
 const samplingAlgorithmsOptions = [
   { label: 'default', value: 'NONE' },
   { label: 'average', value: 'AVERAGE' },
-  { label: 'first', value: 'FIRST_ITEM' },
+  { label: 'first', value: 'FIRST' },
   { label: 'min', value: 'MIN' },
   { label: 'max', value: 'MAX' },
 ];
@@ -31,7 +31,14 @@ export interface TagKeyElement {
   tagValue: string;
 }
 
-export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]; isBuketSizeInvalid: boolean }> {
+type State = {
+  tagList: TagKeyElement[];
+  isBuketSizeInvalid: boolean;
+  isNameLoading: boolean;
+  default_metric_name: string;
+};
+
+export class QueryEditor extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     const bucketSize: number | undefined = this.props.query.sampling?.bucket_size;
@@ -43,7 +50,23 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
     this.state = {
       tagList: tagList,
       isBuketSizeInvalid: isBuketSizeInvalid,
+      isNameLoading: false,
+      default_metric_name: 'default_metric_name',
     };
+    this.props.datasource.getMetricNames('', 1).then(metrics => {
+      let name = '';
+      if (metrics.length === 0) {
+        name = 'no metric found !';
+      } else {
+        name = metrics[0];
+      }
+      this.setState(state => {
+        return {
+          ...state,
+          default_metric_name: name,
+        };
+      });
+    });
   }
 
   private buildTagList(tags: { [key: string]: string }): TagKeyElement[] {
@@ -102,6 +125,8 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
 
   onBucketSizeAddCustomOptions = (newBucketSize: string) => {
     bucketSizeCustomOptions.push({ label: kebabCase(newBucketSize), value: Number(newBucketSize) });
+    // TODO avoid forceUpdate by setting bucketSizeCustomOptions into state
+    this.forceUpdate();
   };
 
   onClearTags = () => {
@@ -165,12 +190,28 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
    * @param metricNameInput
    */
   async getMetricNames(metricNameInput: string): Promise<Array<SelectableValue<string>>> {
-    console.error('metricNameInput', metricNameInput);
-    return this.props.datasource.getMetricNames(metricNameInput).then(metricNames => {
-      return metricNames.map(name => {
-        return { label: name, value: name };
-      });
+    this.setState(state => {
+      return {
+        ...state,
+        isNameLoading: true,
+      };
     });
+    return this.props.datasource
+      .getMetricNames(metricNameInput)
+      .then(metricNames => {
+        return metricNames.map(name => {
+          return { label: name, value: name };
+        });
+      })
+      .then(rsp => {
+        this.setState(state => {
+          return {
+            ...state,
+            isNameLoading: false,
+          };
+        });
+        return rsp;
+      });
   }
 
   /**
@@ -210,17 +251,17 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
   }
 
   private getSamplingAlgoValue(): SelectableValue<string> {
-    if (this.props.query.sampling?.bucket_size !== undefined) {
+    if (this.props.query.sampling?.algorithm !== undefined) {
       return { label: this.props.query.sampling?.algorithm, value: this.props.query.sampling?.algorithm };
     }
     return { label: 'default', value: 'NONE' };
   }
 
   private getNameValue(): SelectableValue<string> {
-    if (this.props.query.sampling?.bucket_size !== undefined) {
-      return { label: this.props.query.name, value: this.props.query.name };
-    }
-    return { label: '', value: '' };
+    return {
+      label: this.props.query.name || this.state.default_metric_name,
+      value: this.props.query.name || this.state.default_metric_name,
+    };
   }
 
   render() {
@@ -238,6 +279,10 @@ export class QueryEditor extends PureComponent<Props, { tagList: TagKeyElement[]
               value={metricNameValue}
               onChange={this.onMetricNameChange}
               loadingMessage="Searching metrics..."
+              defaultOptions={true}
+              isSearchable={true}
+              isLoading={this.state.isNameLoading}
+              cacheOptions={true}
             />
           </Field>
         </div>

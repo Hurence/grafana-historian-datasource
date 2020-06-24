@@ -12,9 +12,18 @@ type Props = {
   getTagNames: (tagNameInput: string) => Promise<Array<SelectableValue<string>>>;
 };
 
-export class KeyValueTagEditor extends React.Component<Props, any> {
+type State = {
+  isTagNameLoading: boolean;
+  isTagValueLoading: boolean;
+};
+
+export class KeyValueTagEditor extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      isTagNameLoading: false,
+      isTagValueLoading: false,
+    };
   }
 
   onTagKeyChange = (selected: SelectableValue<string>) => {
@@ -36,11 +45,39 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
   };
 
   loadTagValues = (query: string) => {
-    return this.props.getTagValues(this.props.tag.tagKey, query);
+    this.setState(state => {
+      return {
+        ...state,
+        isTagValueLoading: true,
+      };
+    });
+    return this.props.getTagValues(this.props.tag.tagKey, query).then(rsp => {
+      this.setState(state => {
+        return {
+          ...state,
+          isTagValueLoading: false,
+        };
+      });
+      return rsp;
+    });
   };
 
   loadTagNames = (query: string) => {
-    return this.props.getTagNames(query);
+    this.setState(state => {
+      return {
+        ...state,
+        isTagNameLoading: true,
+      };
+    });
+    return this.props.getTagNames(query).then(rsp => {
+      this.setState(state => {
+        return {
+          ...state,
+          isTagNameLoading: false,
+        };
+      });
+      return rsp;
+    });
   };
 
   //label="Tag name" description="The tag you want to filter on"
@@ -54,7 +91,11 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
               loadOptions={this.loadTagNames}
               value={{ label: this.props.tag.tagKey, value: this.props.tag.tagKey }}
               onChange={this.onTagKeyChange}
-              loadingMessage="Searching metrics..."
+              loadingMessage="Searching tag names..."
+              defaultOptions={true}
+              isSearchable={true}
+              isLoading={this.state.isTagNameLoading}
+              cacheOptions={true}
             />
           </Field>
           <Field label="Value" description="Tag value">
@@ -62,21 +103,13 @@ export class KeyValueTagEditor extends React.Component<Props, any> {
               loadOptions={this.loadTagValues}
               value={{ label: this.props.tag.tagValue, value: this.props.tag.tagValue }}
               onChange={this.onTagValueChange}
-              loadingMessage="Searching metrics..."
+              loadingMessage="Searching tag values..."
+              defaultOptions={true}
+              isSearchable={true}
+              isLoading={this.state.isTagValueLoading}
+              cacheOptions={true}
             />
           </Field>
-          {/* <Input 
-            name="tag-name" 
-            label="tag key" 
-            onChange={this.onTagKeyChange} 
-            value={this.props.tag.tagKey} />
-            <Input
-              name="tag-value"
-              label="tag value"
-              onChange={this.onTagValueChange}
-              value={this.props.tag.tagValue}
-            /> */}
-
           <IconButton
             onClick={this.onDeleteTag}
             name="trash-alt"

@@ -158,11 +158,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
    * return all metric name matching metricNameInput
    * @param metricNameInput
    */
-  async getMetricNames(metricNameInput: string): Promise<string[]> {
+  async getMetricNames(metricNameInput: string, limit?: number): Promise<string[]> {
     return this.searchValues({
       ...{
         field: 'name',
-        limit: 20,
+        limit: limit || 20,
       },
       query: metricNameInput,
     }).catch(error => {
