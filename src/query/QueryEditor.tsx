@@ -49,7 +49,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     this.state = {
       tagList: tagList,
       isBuketSizeInvalid: isBuketSizeInvalid,
-      isNameLoading: false
+      isNameLoading: false,
     };
   }
 
