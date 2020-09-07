@@ -35,7 +35,6 @@ type State = {
   tagList: TagKeyElement[];
   isBuketSizeInvalid: boolean;
   isNameLoading: boolean;
-  default_metric_name: string;
 };
 
 export class QueryEditor extends PureComponent<Props, State> {
@@ -50,23 +49,8 @@ export class QueryEditor extends PureComponent<Props, State> {
     this.state = {
       tagList: tagList,
       isBuketSizeInvalid: isBuketSizeInvalid,
-      isNameLoading: false,
-      default_metric_name: 'default_metric_name',
+      isNameLoading: false
     };
-    this.props.datasource.getMetricNames('', 1).then(metrics => {
-      let name = '';
-      if (metrics.length === 0) {
-        name = 'no metric found !';
-      } else {
-        name = metrics[0];
-      }
-      this.setState(state => {
-        return {
-          ...state,
-          default_metric_name: name,
-        };
-      });
-    });
   }
 
   private buildTagList(tags: { [key: string]: string }): TagKeyElement[] {
@@ -259,8 +243,8 @@ export class QueryEditor extends PureComponent<Props, State> {
 
   private getNameValue(): SelectableValue<string> {
     return {
-      label: this.props.query.name || this.state.default_metric_name,
-      value: this.props.query.name || this.state.default_metric_name,
+      label: this.props.query.name,
+      value: this.props.query.name,
     };
   }
 
