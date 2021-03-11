@@ -214,3 +214,15 @@ The response format is
 ```json
 ["sensor", "usine"]
 ```
+
+## make a release of the plugin
+
+* Make a branch for your release
+* commit the dist folder
+* tag it
+* make a tgz of the dist folder using this command :
+```
+  tar -cvzf historian-datasource-plugin.tgz dist
+```
+
+verify the tgz is containing the dist folder. Then upload it in the release.
